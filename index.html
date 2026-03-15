@@ -62,7 +62,7 @@ body {
   min-height: 100vh;
   padding: 0;
 }
-.page { display: none; padding: 40px 36px 120px; max-width: 820px; }
+.page { display: none; padding: 40px 36px 80px; max-width: 820px; }
 .page.active { display: block; animation: fadeIn .35s ease; }
 @keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform:none; } }
 
@@ -428,13 +428,6 @@ input[type=text]:focus, input[type=number]:focus { border-color: var(--accent); 
     </div>
     <div class="nav-item" onclick="go('branding')">
       <span class="nav-icon">◎</span><span>Personal branding</span><span class="nav-dot" style="margin-left:auto"></span>
-    </div>
-  </div>
-
-  <div class="nav-section">
-    <div class="nav-section-label">AI Advisor</div>
-    <div class="nav-item" onclick="go('ai')" style="border:1px solid rgba(200,240,96,0.2)">
-      <span class="nav-icon">✦</span><span style="color:var(--accent)">Analisa keuangan</span><span class="nav-dot" style="margin-left:auto;background:var(--accent)"></span>
     </div>
   </div>
 
@@ -1020,78 +1013,11 @@ input[type=text]:focus, input[type=number]:focus { border-color: var(--accent); 
   </div>
 </div>
 
-
-<!-- AI FINANCIAL ADVISOR PAGE -->
-<div id="page-ai" class="page">
-  <div class="page-header">
-    <div class="page-eyebrow">AI Advisor</div>
-    <h2 class="page-title">Analisa <span>keuangan</span></h2>
-    <p class="page-subtitle">Upload PDF slip gaji atau mutasi rekening — AI analisa dan beri rekomendasi personal.</p>
-  </div>
-
-  <div id="ai-upload-area" class="card" style="border:2px dashed rgba(200,240,96,0.25);background:rgba(200,240,96,0.03);text-align:center;padding:32px 20px;transition:border-color .2s" ondragover="event.preventDefault();this.style.borderColor='rgba(200,240,96,0.6)'" ondragleave="this.style.borderColor='rgba(200,240,96,0.25)'" ondrop="handlePDFDrop(event)">
-    <div style="font-size:32px;margin-bottom:10px">✦</div>
-    <div style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:6px">Upload PDF keuanganmu</div>
-    <div style="font-size:13px;color:var(--text3);margin-bottom:16px">Slip gaji, mutasi rekening BCA/BRI/BNI, atau catatan pengeluaran</div>
-    <input type="file" id="pdf-input" accept=".pdf" style="display:none" onchange="handlePDFFile(this.files[0])">
-    <button class="btn btn-primary" onclick="document.getElementById('pdf-input').click()">Pilih file PDF</button>
-    <div style="font-size:11px;color:var(--text3);margin-top:10px">PDF hanya dibaca lokal, tidak disimpan ke server manapun</div>
-  </div>
-
-  <div id="ai-file-info" style="display:none" class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div style="width:36px;height:36px;border-radius:8px;background:rgba(200,240,96,0.12);display:flex;align-items:center;justify-content:center;font-size:16px">📄</div>
-        <div>
-          <div id="ai-filename" style="font-size:13px;font-weight:600;color:var(--text)">file.pdf</div>
-          <div id="ai-filesize" style="font-size:11px;color:var(--text3)">0 KB</div>
-        </div>
-      </div>
-      <button class="btn btn-primary" onclick="analyzePDF()">Analisa sekarang ✦</button>
-    </div>
-  </div>
-
-  <div id="ai-loading" style="display:none" class="card" style="text-align:center;padding:28px">
-    <div style="font-size:24px;margin-bottom:10px;color:var(--accent)">✦</div>
-    <div id="ai-loading-text" style="font-size:14px;color:var(--text2)">Membaca dokumen...</div>
-    <div class="progress-wrap" style="margin-top:14px;height:4px"><div id="ai-progress" class="progress-fill" style="width:10%;background:var(--accent)"></div></div>
-  </div>
-
-  <div id="ai-result" style="display:none">
-    <div class="card" style="border-color:rgba(200,240,96,0.3)">
-      <div class="card-title">Ringkasan analisa <span class="ct-badge badge-accent">AI</span></div>
-      <div id="ai-summary" style="font-size:13px;color:var(--text2);line-height:1.8"></div>
-    </div>
-    <div id="ai-metrics-wrap" class="grid4" style="display:none"></div>
-    <div class="card">
-      <div class="card-title">Rekomendasi personal <span class="ct-badge badge-accent">AI</span></div>
-      <div id="ai-reko" style="font-size:13px;color:var(--text2);line-height:1.8"></div>
-    </div>
-  </div>
-
-  <div id="ai-chat-wrap" class="card" style="margin-top:14px">
-    <div class="card-title">Chat dengan AI Advisor <span class="ct-badge badge-green">REALTIME</span></div>
-    <div id="ai-msgs" style="min-height:120px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:12px;padding:4px 0"></div>
-    <div style="display:flex;gap:8px">
-      <input type="text" id="ai-input" placeholder="Tanya apapun tentang keuanganmu..." style="flex:1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAIChat()}">
-      <button class="btn btn-primary" onclick="sendAIChat()">Kirim</button>
-    </div>
-    <div id="ai-quick-btns" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
-      <button class="btn btn-ghost" style="font-size:12px" onclick="askAI('Berapa idealnya tabungan dari gaji 11 juta per bulan?')">Berapa idealnya tabungan?</button>
-      <button class="btn btn-ghost" style="font-size:12px" onclick="askAI('Pengeluaran apa yang harus dikurangi dulu?')">Apa yang harus dikurangi?</button>
-      <button class="btn btn-ghost" style="font-size:12px" onclick="askAI('Kapan aku bisa mulai cicil kos-kosan dari gaji 11 juta?')">Kapan bisa cicil kos?</button>
-      <button class="btn btn-ghost" style="font-size:12px" onclick="askAI('Berikan analisa lengkap kondisi keuanganku sekarang dan langkah perbaikannya')">Analisa kondisi keuanganku</button>
-    </div>
-  </div>
-  <div style="text-align:right;margin-top:4px">
-    <button class="btn btn-ghost" style="font-size:11px;padding:4px 12px" onclick="window._cachedApiKey=null;promptApiKey().then(k=>{if(k)toast('✓ API key diperbarui')})">⚙ Ganti API Key</button>
-  </div>
-</div>
 </main>
 </div>
 
 <script>
-const pages = ['dashboard','alokasi','tracker','rekening','simulasi','roadmap','engineer','warung','risiko','asuransi','branding','ai'];
+const pages = ['dashboard','alokasi','tracker','rekening','simulasi','roadmap','engineer','warung','risiko','asuransi','branding'];
 
 function go(id) {
   pages.forEach(p => {
@@ -1276,214 +1202,6 @@ function toggleCheck(i) {
 
 renderChecklist();
 
-
-// ── AI FINANCIAL ADVISOR ──
-let _aiDocCtx = '';
-let _aiHistory = [];
-
-function handlePDFDrop(e) {
-  e.preventDefault();
-  document.getElementById('ai-upload-area').style.borderColor = 'rgba(200,240,96,0.25)';
-  const f = e.dataTransfer.files[0];
-  if (f && f.type === 'application/pdf') handlePDFFile(f);
-}
-
-function handlePDFFile(file) {
-  if (!file) return;
-  document.getElementById('ai-filename').textContent = file.name;
-  document.getElementById('ai-filesize').textContent = (file.size/1024).toFixed(0) + ' KB';
-  document.getElementById('ai-upload-area').style.display = 'none';
-  document.getElementById('ai-file-info').style.display = 'block';
-  window._pdfFile = file;
-}
-
-async function getApiKey() {
-  // Try cache first
-  if (window._cachedApiKey) return window._cachedApiKey;
-  // Try firebase
-  if (window._db && window._fsDoc && window._fsGetDoc) {
-    try {
-      const snap = await window._fsGetDoc(window._fsDoc(window._db, 'config', 'apikey'));
-      if (snap.exists() && snap.data().key) {
-        window._cachedApiKey = snap.data().key;
-        return window._cachedApiKey;
-      }
-    } catch(e) { console.warn('Firebase key fetch failed', e); }
-  }
-  // Fallback: ask user
-  return await promptApiKey();
-}
-
-async function saveApiKeyToFirebase(key) {
-  if (window._db && window._fsDoc && window._fsSetDoc) {
-    try {
-      await window._fsSetDoc(window._fsDoc(window._db, 'config', 'apikey'), { key, savedAt: Date.now() });
-      return true;
-    } catch(e) { console.warn('Save key failed', e); return false; }
-  }
-  return false;
-}
-
-function promptApiKey() {
-  return new Promise((resolve) => {
-    // Remove existing modal if any
-    document.getElementById('apikey-modal')?.remove();
-    const modal = document.createElement('div');
-    modal.id = 'apikey-modal';
-    modal.style.cssText = 'position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;padding:20px';
-    modal.innerHTML = `
-      <div style="background:#1c1c22;border:1px solid rgba(200,240,96,0.2);border-radius:16px;padding:28px;max-width:480px;width:100%;font-family:sans-serif">
-        <div style="font-size:11px;color:#5c5a56;letter-spacing:.08em;margin-bottom:6px">SETUP SEKALI</div>
-        <div style="font-size:20px;font-weight:600;color:#f0ede8;margin-bottom:6px">API Key Anthropic</div>
-        <div style="font-size:13px;color:#9b9891;margin-bottom:16px;line-height:1.6">
-          Untuk fitur AI Advisor, kamu perlu API key dari Anthropic.<br>
-          Key disimpan aman di Firebase-mu, tidak bisa dilihat orang lain.
-        </div>
-        <div style="background:rgba(255,255,255,0.04);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:12px;color:#9b9891;line-height:1.8">
-          <div style="font-weight:600;color:#c8f060;margin-bottom:4px">Cara dapat API key gratis:</div>
-          <div>1. Buka <a href="https://console.anthropic.com" target="_blank" style="color:#60a8f0">console.anthropic.com</a></div>
-          <div>2. Daftar / login dengan email</div>
-          <div>3. Klik <strong style="color:#f0ede8">API Keys</strong> → <strong style="color:#f0ede8">Create Key</strong></div>
-          <div>4. Copy key yang muncul → paste di bawah</div>
-          <div style="margin-top:6px;color:#f0b429">⚠ Key dimulai dengan "sk-ant-..."</div>
-        </div>
-        <input id="apikey-input" type="password" placeholder="sk-ant-api03-..." style="width:100%;background:#222228;border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#f0ede8;font-size:13px;padding:10px 14px;outline:none;margin-bottom:10px;box-sizing:border-box;font-family:monospace">
-        <div style="display:flex;gap:8px">
-          <button id="apikey-save-btn" style="flex:1;background:#c8f060;color:#0d0d0f;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:700;cursor:pointer">Simpan & Lanjutkan</button>
-          <button onclick="document.getElementById('apikey-modal').remove();resolve(null)" style="background:transparent;color:#9b9891;border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:11px 16px;font-size:13px;cursor:pointer">Batal</button>
-        </div>
-        <div id="apikey-status" style="font-size:12px;color:#9b9891;margin-top:8px;text-align:center"></div>
-      </div>`;
-    document.body.appendChild(modal);
-    document.getElementById('apikey-save-btn').onclick = async () => {
-      const key = document.getElementById('apikey-input').value.trim();
-      if (!key.startsWith('sk-ant-')) {
-        document.getElementById('apikey-status').textContent = '⚠ Key harus dimulai dengan sk-ant-...';
-        document.getElementById('apikey-status').style.color = '#f06060';
-        return;
-      }
-      document.getElementById('apikey-status').textContent = '⟳ Menyimpan ke Firebase...';
-      document.getElementById('apikey-status').style.color = '#9b9891';
-      const saved = await saveApiKeyToFirebase(key);
-      window._cachedApiKey = key;
-      document.getElementById('apikey-status').textContent = saved ? '✓ Tersimpan di Firebase!' : '✓ Tersimpan (lokal)';
-      document.getElementById('apikey-status').style.color = '#c8f060';
-      setTimeout(() => { modal.remove(); resolve(key); }, 700);
-    };
-  });
-}
-
-async function callAI(messages, system) {
-  const key = await getApiKey();
-  if (!key) throw new Error('API key tidak ada');
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-allow-browser': 'true' },
-    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1500, system, messages })
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    if (res.status === 401) { window._cachedApiKey = null; throw new Error('API key salah atau expired'); }
-    throw new Error(err.error?.message || 'API error ' + res.status);
-  }
-  const data = await res.json();
-  return data.content[0].text;
-}
-
-async function analyzePDF() {
-  const file = window._pdfFile;
-  if (!file) return;
-  document.getElementById('ai-file-info').style.display = 'none';
-  document.getElementById('ai-loading').style.display = 'block';
-  document.getElementById('ai-result').style.display = 'none';
-  const steps = ['Membaca dokumen...','Mengekstrak angka...','Menganalisa pola...','Menyusun rekomendasi...'];
-  let si = 0;
-  const iv = setInterval(() => {
-    si = (si+1)%steps.length;
-    document.getElementById('ai-loading-text').textContent = steps[si];
-    document.getElementById('ai-progress').style.width = ((si+1)/steps.length*100)+'%';
-  }, 800);
-  try {
-    const b64 = await new Promise((res,rej) => { const r=new FileReader(); r.onload=()=>res(r.result.split(',')[1]); r.onerror=rej; r.readAsDataURL(file); });
-    const gaji = parseInt(document.getElementById('gaji-slider').value)*1e6;
-    const sys = `Kamu adalah AI Financial Advisor untuk Electrical Engineer muda di Padang, Indonesia. Gaji: Rp ${gaji.toLocaleString('id')}/bulan. Target financial freedom umur 40. Analisa dokumen keuangan yang diupload. Jawab dalam Bahasa Indonesia yang friendly. Format:
-1. RINGKASAN (2-3 paragraf)
-2. DATA: {"pemasukan":X,"pengeluaran":X,"tabungan":X} (angka tanpa titik/koma)
-3. REKOMENDASI (5 poin konkret dengan angka)`;
-    const txt = await callAI([{role:'user',content:[{type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},{type:'text',text:'Analisa dokumen keuangan ini secara detail dan berikan rekomendasi personal.'}]}], sys);
-    clearInterval(iv);
-    document.getElementById('ai-loading').style.display = 'none';
-    const dataMatch = txt.match(/DATA:\s*(\{[^}]+\})/);
-    if (dataMatch) {
-      try {
-        const d = JSON.parse(dataMatch[1]);
-        const fmt = n => n>=1e6?(n/1e6).toFixed(1)+' jt':(n/1e3).toFixed(0)+' rb';
-        const mw = document.getElementById('ai-metrics-wrap');
-        mw.style.display = 'grid';
-        mw.innerHTML = `<div class="metric accent"><div class="metric-label">PEMASUKAN</div><div class="metric-value">${fmt(d.pemasukan||0)}</div></div><div class="metric"><div class="metric-label">PENGELUARAN</div><div class="metric-value" style="color:var(--red)">${fmt(d.pengeluaran||0)}</div></div><div class="metric amber"><div class="metric-label">TABUNGAN</div><div class="metric-value">${fmt(d.tabungan||0)}</div></div><div class="metric blue"><div class="metric-label">RASIO TABUNGAN</div><div class="metric-value">${d.pemasukan?Math.round(d.tabungan/d.pemasukan*100):0}%</div></div>`;
-      } catch(e){}
-    }
-    const parts = txt.split(/DATA:[^
-]+/);
-    document.getElementById('ai-summary').innerHTML = (parts[0]||'').replace(/^1\.\s*RINGKASAN\s*/i,'').trim().replace(/
-/g,'<br>');
-    const rekoPart = txt.split(/REKOMENDASI/i)[1]||'';
-    document.getElementById('ai-reko').innerHTML = rekoPart.replace(/^[\s:]+/,'').trim().replace(/
-/g,'<br>');
-    document.getElementById('ai-result').style.display = 'block';
-    _aiDocCtx = txt;
-    _aiHistory = [];
-    addAIBubble('ai','✦ Dokumen berhasil dianalisa! Kamu bisa tanya apapun tentang keuanganmu sekarang.');
-  } catch(err) {
-    clearInterval(iv);
-    document.getElementById('ai-loading').style.display = 'none';
-    document.getElementById('ai-file-info').style.display = 'block';
-    addAIBubble('ai','Maaf ada error: '+err.message+'. Coba lagi ya!');
-  }
-}
-
-function addAIBubble(role, text) {
-  const el = document.getElementById('ai-msgs');
-  const isAI = role==='ai';
-  const d = document.createElement('div');
-  d.style.cssText = `display:flex;flex-direction:${isAI?'row':'row-reverse'};gap:8px;align-items:flex-end`;
-  d.innerHTML = `<div style="width:26px;height:26px;border-radius:50%;background:${isAI?'rgba(200,240,96,0.12)':'var(--surface2)'};display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">${isAI?'✦':'U'}</div><div style="max-width:82%;background:${isAI?'var(--bg2)':'var(--surface)'};border:1px solid ${isAI?'rgba(200,240,96,0.18)':'var(--border)'};border-radius:${isAI?'12px 12px 12px 3px':'12px 12px 3px 12px'};padding:10px 14px;font-size:13px;color:var(--text2);line-height:1.7">${text.replace(/\n/g,'<br>')}</div>`;
-  el.appendChild(d);
-  el.scrollTop = el.scrollHeight;
-}
-
-function addTyping() {
-  const el=document.getElementById('ai-msgs');
-  const d=document.createElement('div');
-  d.id='ai-typing';d.style.cssText='display:flex;gap:8px;align-items:flex-end';
-  d.innerHTML='<div style="width:26px;height:26px;border-radius:50%;background:rgba(200,240,96,0.12);display:flex;align-items:center;justify-content:center;font-size:11px">✦</div><div style="background:var(--bg2);border:1px solid rgba(200,240,96,0.18);border-radius:12px 12px 12px 3px;padding:10px 14px;font-size:13px;color:var(--text3)">mengetik...</div>';
-  el.appendChild(d);el.scrollTop=el.scrollHeight;
-}
-
-async function sendAIChat() {
-  const inp = document.getElementById('ai-input');
-  const msg = inp.value.trim(); if(!msg) return;
-  inp.value='';
-  addAIBubble('user', msg);
-  addTyping();
-  _aiHistory.push({role:'user',content:msg});
-  const gaji=parseInt(document.getElementById('gaji-slider').value)*1e6;
-  const omzet=parseInt(document.getElementById('omzet-slider').value);
-  const sys=`Kamu AI Financial Advisor untuk Electrical Engineer di Padang. Gaji Rp ${gaji.toLocaleString('id')}/bulan, omzet warung ~Rp ${omzet.toLocaleString('id')}/hari. Target financial freedom umur 40.${_aiDocCtx?'\nKonteks dokumen keuangan: '+_aiDocCtx.substring(0,1200):''} Jawab Bahasa Indonesia, friendly, pakai angka spesifik, maksimal 3-4 paragraf pendek.`;
-  try {
-    const reply=await callAI(_aiHistory.slice(-12), sys);
-    document.getElementById('ai-typing')?.remove();
-    addAIBubble('ai',reply);
-    _aiHistory.push({role:'assistant',content:reply});
-    if(_aiHistory.length>24) _aiHistory=_aiHistory.slice(-24);
-  } catch(e) {
-    document.getElementById('ai-typing')?.remove();
-    addAIBubble('ai','Gagal konek ke AI: '+e.message);
-  }
-}
-
-function askAI(q) { document.getElementById('ai-input').value=q; sendAIChat(); }
-
 // RISK TOGGLE
 function toggleRisk(card) {
   const body = card.querySelector('.risk-body');
@@ -1551,9 +1269,7 @@ function setStatus(text, color) {
   if (!s) {
     s = document.createElement('div');
     s.id = 'fb-status';
-    s.style.cssText = 'position:fixed;top:12px;right:16px;z-index:800;font-size:11px;font-family:var(--font-mono);padding:4px 10px;border-radius:20px;background:rgba(13,13,15,0.9);border:0.5px solid rgba(255,255,255,0.1);color:#9b9891;cursor:pointer';
-    s.title = 'Klik untuk kelola PIN sync';
-    s.onclick = () => { const pb = document.getElementById('pin-bar'); if(pb) pb.style.display = pb.style.display==='none'?'flex':'none'; };
+    s.style.cssText = 'position:fixed;top:12px;right:16px;z-index:9999;font-size:11px;font-family:var(--font-mono);padding:4px 10px;border-radius:20px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary)';
     document.body.appendChild(s);
   }
   s.style.color = color;
@@ -1617,11 +1333,6 @@ if (PLACEHOLDER) {
   const app = initializeApp(firebaseConfig);
   db = getFirestore(app);
   const auth = getAuth(app);
-  // Expose to window for regular script access
-  window._db = db;
-  window._fsDoc = doc;
-  window._fsSetDoc = setDoc;
-  window._fsGetDoc = getDoc;
 
   const PIN_KEY = 'elp_pin';
   let currentPin = localStorage.getItem(PIN_KEY) || '';
@@ -1630,7 +1341,7 @@ if (PLACEHOLDER) {
   // PIN bar UI
   const pinBar = document.createElement('div');
   pinBar.id = 'pin-bar';
-  pinBar.style.cssText = 'position:fixed;bottom:0;left:220px;right:0;z-index:900;background:#1c1c22;border-top:1px solid rgba(255,255,255,0.08);padding:10px 20px;display:flex;align-items:center;gap:10px;font-family:sans-serif';
+  pinBar.style.cssText = 'position:fixed;bottom:0;left:220px;right:0;z-index:9999;background:#1c1c22;border-top:1px solid rgba(255,255,255,0.08);padding:10px 20px;display:flex;align-items:center;gap:10px;font-family:sans-serif';
   pinBar.innerHTML = '<span style="font-size:12px;color:#9b9891;white-space:nowrap">PIN Sync:</span>'
     + '<input id="pin-input" type="text" maxlength="20" placeholder="Buat PIN unik kamu (min 4 huruf)" value="' + currentPin + '" style="flex:1;max-width:260px;background:#222228;border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#f0ede8;font-size:13px;padding:7px 12px;outline:none">'
     + '<button id="pin-save-btn" style="background:#c8f060;color:#0d0d0f;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Simpan & Sync</button>'
@@ -1639,9 +1350,6 @@ if (PLACEHOLDER) {
   document.body.appendChild(pinBar);
 
   document.getElementById('pin-close').onclick = () => { pinBar.style.display = 'none'; };
-
-  // If PIN already set, hide bar immediately — show only tiny indicator in status
-  if (currentPin) { pinBar.style.display = 'none'; }
 
   function setPinSt(msg, color) {
     const el = document.getElementById('pin-st');
@@ -1655,7 +1363,6 @@ if (PLACEHOLDER) {
   function listenToData() {
     if (unsub) unsub();
     if (!currentPin) return;
-    window._currentPin = currentPin;
     unsub = onSnapshot(getPinDoc(), (snap) => {
       if (!snap.exists()) return;
       const d = snap.data();
@@ -1698,23 +1405,18 @@ if (PLACEHOLDER) {
     const val = document.getElementById('pin-input').value.trim();
     if (!val || val.length < 4) { setPinSt('Min 4 karakter!', '#f06060'); return; }
     currentPin = val;
-    window._currentPin = val;
     localStorage.setItem(PIN_KEY, val);
     setPinSt('⟳ Menghubungkan...', '#9b9891');
     setStatus('⟳ Menghubungkan...', '#9b9891');
     listenToData();
-    setTimeout(() => { pinBar.style.display = 'none'; toast('✓ PIN disimpan! Ketik PIN sama di HP untuk sync.'); }, 800);
+    setTimeout(() => { pinBar.style.display = 'none'; toast('✓ PIN disimpan! Ketik PIN sama di HP untuk sync.'); }, 1000);
   };
 
   await signInAnonymously(auth).catch(() => setStatus('✕ Auth gagal', '#f06060'));
 
   if (currentPin) {
-    window._currentPin = currentPin;
     setStatus('⟳ Konek PIN...', '#9b9891');
     setPinSt('⟳ Konek...', '#9b9891');
-    // Auto-hide pin bar after 3 seconds if PIN already set
-    setTimeout(() => { if(pinBar) pinBar.style.display='none'; }, 3000);
-    await signInAnonymously(auth).catch(()=>{});
     listenToData();
   } else {
     setStatus('⚡ Set PIN untuk sync', '#f0b429');
