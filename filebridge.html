@@ -108,6 +108,9 @@ h1,h2,h3{font-weight:600}
 /* TOAST */
 #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--b2);border-radius:10px;padding:9px 18px;font-size:13px;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 </style>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 </head>
 <body>
 
@@ -259,27 +262,39 @@ async function join(){
   room=pin;
   setSt('⟳ Menghubungkan...','var(--am)');
   try{
-    const {initializeApp}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-    const {getDatabase,ref,set,onValue,remove,push,onChildAdded}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
-    const {getAuth,signInAnonymously}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
-    const app=initializeApp(FB,'fb2');
-    fbDb=getDatabase(app);fbRef=ref;fbSet=set;fbOnValue=onValue;fbRemove=remove;fbPush=push;fbOnChildAdded=onChildAdded;fbOff=()=>{};
-    const auth=getAuth(app);
-    await signInAnonymously(auth);
+    // Use Firebase compat SDK (loaded via <script> tags in head)
+    // Avoid duplicate app error
+    if (!firebase.apps.length) {
+      firebase.initializeApp(FB);
+    } else {
+      firebase.app(); // use existing
+    }
+    const _db = firebase.database();
+    const _auth = firebase.auth();
+    await _auth.signInAnonymously();
+    // Map to compat API
+    fbDb = _db;
+    fbRef = (db, path) => db.ref(path);
+    fbSet = (ref, val) => ref.set(val);
+    fbOnValue = (ref, cb) => ref.on('value', snap => cb(snap));
+    fbRemove = (ref) => ref.remove();
+    fbPush = async (ref, val) => { ref.push(val); };
+    fbOnChildAdded = (ref, cb) => ref.on('child_added', snap => cb(snap));
+    fbOff = (ref) => ref.off();
 
     // Announce presence with my file list
     await announce();
 
     // Watch all presence in room
-    fbOnValue(fbRef(fbDb,`r/${room}/p`),(snap)=>{
+    fbRef(fbDb,`r/${room}/p`).on('value',(snap)=>{
       const data=snap.val()||{};
       handlePresence(data);
     });
 
     // Watch signals to me
-    fbOnChildAdded(fbRef(fbDb,`r/${room}/sig/${myId}`),async(snap)=>{
+    fbRef(fbDb,`r/${room}/sig/${myId}`).on('child_added',async(snap)=>{
       const msg=snap.val();
-      await fbRemove(snap.ref);
+      await snap.ref.remove();
       if(msg) handleSignal(msg.from,msg);
     });
 
@@ -304,7 +319,7 @@ async function announce(){
 }
 
 function leave(){
-  if(fbDb) fbRemove(fbRef(fbDb,`r/${room}/p/${myId}`)).catch(()=>{});
+  if(fbDb) fbRef(fbDb,`r/${room}/p/${myId}`).remove().catch(()=>{});
   Object.keys(peers).forEach(closePeer);
   peers={};sharedFiles=[];room='';
   $('P').style.display='block';$('A').style.display='none';
@@ -407,7 +422,7 @@ async function handleSignal(fromId, msg){
 
 async function signal(toId,msg){
   if(!fbDb)return;
-  await fbPush(fbRef(fbDb,`r/${room}/sig/${toId}`),msg);
+  fbRef(fbDb,`r/${room}/sig/${toId}`).push(msg);
 }
 
 function closePeer(id){
@@ -625,7 +640,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   renderShared();
 });
 window.addEventListener('beforeunload',()=>{
-  if(fbDb&&room) fbRemove(fbRef(fbDb,`r/${room}/p/${myId}`)).catch(()=>{});
+  if(fbDb&&room) fbRef(fbDb,`r/${room}/p/${myId}`).remove().catch(()=>{});
 });
 </script>
 </body>
