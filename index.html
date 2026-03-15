@@ -1329,100 +1329,106 @@ if (PLACEHOLDER) {
   document.body.appendChild(guide);
 
 } else {
-  // REAL FIREBASE INIT
+  // FIREBASE — PIN SYNC
   const app = initializeApp(firebaseConfig);
   db = getFirestore(app);
   const auth = getAuth(app);
 
-  setStatus('⟳ Menghubungkan...', 'var(--color-text-secondary)');
+  const PIN_KEY = 'elp_pin';
+  let currentPin = localStorage.getItem(PIN_KEY) || '';
+  let unsub = null;
 
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      uid = user.uid;
-      setStatus('● Terhubung', 'var(--color-text-success)');
-      listenToData();
-    }
-  });
+  // PIN bar UI
+  const pinBar = document.createElement('div');
+  pinBar.id = 'pin-bar';
+  pinBar.style.cssText = 'position:fixed;bottom:0;left:220px;right:0;z-index:9999;background:#1c1c22;border-top:1px solid rgba(255,255,255,0.08);padding:10px 20px;display:flex;align-items:center;gap:10px;font-family:sans-serif';
+  pinBar.innerHTML = '<span style="font-size:12px;color:#9b9891;white-space:nowrap">PIN Sync:</span>'
+    + '<input id="pin-input" type="text" maxlength="20" placeholder="Buat PIN unik kamu (min 4 huruf)" value="' + currentPin + '" style="flex:1;max-width:260px;background:#222228;border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#f0ede8;font-size:13px;padding:7px 12px;outline:none">'
+    + '<button id="pin-save-btn" style="background:#c8f060;color:#0d0d0f;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">Simpan & Sync</button>'
+    + '<span id="pin-st" style="font-size:11px;color:#9b9891;min-width:90px;text-align:center"></span>'
+    + '<button id="pin-close" style="background:transparent;border:none;color:#5c5a56;cursor:pointer;font-size:18px;line-height:1;padding:0 4px">×</button>';
+  document.body.appendChild(pinBar);
 
-  await signInAnonymously(auth).catch(() => {
-    setStatus('✕ Gagal konek', 'var(--color-text-danger)');
-  });
+  document.getElementById('pin-close').onclick = () => { pinBar.style.display = 'none'; };
 
-  function getUserDoc() {
-    return doc(db, 'users', uid, 'data', 'state');
+  function setPinSt(msg, color) {
+    const el = document.getElementById('pin-st');
+    if (el) { el.textContent = msg; el.style.color = color; }
+  }
+
+  function getPinDoc() {
+    return doc(db, 'pins', currentPin, 'data', 'state');
   }
 
   function listenToData() {
-    onSnapshot(getUserDoc(), (snap) => {
+    if (unsub) unsub();
+    if (!currentPin) return;
+    unsub = onSnapshot(getPinDoc(), (snap) => {
       if (!snap.exists()) return;
       const d = snap.data();
-
-      // restore gaji
-      if (d.gaji !== undefined) {
-        const sl = document.getElementById('gaji-slider');
-        if (sl) { sl.value = d.gaji; updateAlokasi(); }
-      }
-      // restore omzet & bahan
-      if (d.omzet !== undefined) {
-        const sl = document.getElementById('omzet-slider');
-        if (sl) { sl.value = d.omzet; updateTracker(); }
-      }
-      if (d.bahan !== undefined) {
-        const sl = document.getElementById('bahan-slider');
-        if (sl) { sl.value = d.bahan; updateTracker(); }
-      }
-      // restore sim bulan
-      if (d.simBulan !== undefined) {
-        const sl = document.getElementById('sim-bulan');
-        if (sl) { sl.value = d.simBulan; updateSim(); }
-      }
-      // restore checklist
-      if (d.checked !== undefined) {
-        d.checked.forEach((v, i) => { checked[i] = v; });
-        renderChecklist();
-      }
-      toast('✓ Data dimuat dari cloud');
+      if (d.gaji !== undefined) { const sl = document.getElementById('gaji-slider'); if (sl) { sl.value = d.gaji; updateAlokasi(); } }
+      if (d.omzet !== undefined) { const sl = document.getElementById('omzet-slider'); if (sl) { sl.value = d.omzet; updateTracker(); } }
+      if (d.bahan !== undefined) { const sl = document.getElementById('bahan-slider'); if (sl) { sl.value = d.bahan; updateTracker(); } }
+      if (d.simBulan !== undefined) { const sl = document.getElementById('sim-bulan'); if (sl) { sl.value = d.simBulan; updateSim(); } }
+      if (d.checked !== undefined) { d.checked.forEach((v, i) => { checked[i] = v; }); renderChecklist(); }
+      toast('✓ Data dimuat — PIN: ' + currentPin);
+      setPinSt('● Sync aktif', '#c8f060');
+      setStatus('● Sync aktif', '#c8f060');
     });
   }
 
   function saveData() {
-    if (!uid) return;
-    const sl_g = document.getElementById('gaji-slider');
-    const sl_o = document.getElementById('omzet-slider');
-    const sl_b = document.getElementById('bahan-slider');
-    const sl_s = document.getElementById('sim-bulan');
-    setDoc(getUserDoc(), {
-      gaji: sl_g ? parseInt(sl_g.value) : 11,
-      omzet: sl_o ? parseInt(sl_o.value) : 250000,
-      bahan: sl_b ? parseInt(sl_b.value) : 120000,
-      simBulan: sl_s ? parseInt(sl_s.value) : 6,
+    if (!currentPin) return;
+    const g = document.getElementById('gaji-slider');
+    const o = document.getElementById('omzet-slider');
+    const b = document.getElementById('bahan-slider');
+    const s = document.getElementById('sim-bulan');
+    setDoc(getPinDoc(), {
+      gaji: g ? parseInt(g.value) : 11,
+      omzet: o ? parseInt(o.value) : 250000,
+      bahan: b ? parseInt(b.value) : 120000,
+      simBulan: s ? parseInt(s.value) : 6,
       checked: [...checked],
       updatedAt: Date.now()
     }, { merge: true }).then(() => {
-      setStatus('✓ Tersimpan', 'var(--color-text-success)');
-      setTimeout(() => setStatus('● Online', 'var(--color-text-success)'), 1500);
+      setStatus('✓ Tersimpan', '#c8f060');
+      setTimeout(() => setStatus('● Sync aktif', '#c8f060'), 1500);
     });
   }
 
   function debouncedSave() {
-    setStatus('⟳ Menyimpan...', 'var(--color-text-secondary)');
     clearTimeout(saveTimer);
     saveTimer = setTimeout(saveData, SAVE_DELAY);
   }
 
-  // Patch all interactive controls to trigger save
+  document.getElementById('pin-save-btn').onclick = () => {
+    const val = document.getElementById('pin-input').value.trim();
+    if (!val || val.length < 4) { setPinSt('Min 4 karakter!', '#f06060'); return; }
+    currentPin = val;
+    localStorage.setItem(PIN_KEY, val);
+    setPinSt('⟳ Menghubungkan...', '#9b9891');
+    setStatus('⟳ Menghubungkan...', '#9b9891');
+    listenToData();
+    setTimeout(() => { pinBar.style.display = 'none'; toast('✓ PIN disimpan! Ketik PIN sama di HP untuk sync.'); }, 1000);
+  };
+
+  await signInAnonymously(auth).catch(() => setStatus('✕ Auth gagal', '#f06060'));
+
+  if (currentPin) {
+    setStatus('⟳ Konek PIN...', '#9b9891');
+    setPinSt('⟳ Konek...', '#9b9891');
+    listenToData();
+  } else {
+    setStatus('⚡ Set PIN untuk sync', '#f0b429');
+    setPinSt('Belum ada PIN', '#f0b429');
+  }
+
   window.addEventListener('input', (e) => {
-    if (['gaji-slider','omzet-slider','bahan-slider','sim-bulan'].includes(e.target.id)) {
-      debouncedSave();
-    }
+    if (['gaji-slider','omzet-slider','bahan-slider','sim-bulan'].includes(e.target.id)) debouncedSave();
   });
 
-  // Patch toggleCheck to also save
   const _origToggleCheck = window.toggleCheck;
-  window.toggleCheck = function(i) {
-    _origToggleCheck(i);
-    debouncedSave();
-  };
+  window.toggleCheck = function(i) { _origToggleCheck(i); debouncedSave(); };
 }
 </script>
 </body>
