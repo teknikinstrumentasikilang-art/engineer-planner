@@ -8,647 +8,624 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0d0d0f;--bg2:#141418;--bg3:#1c1c22;
-  --surface:#222228;--surface2:#2a2a32;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
-  --text:#f0ede8;--text2:#9b9891;--text3:#5c5a56;
-  --accent:#c8f060;--blue:#60a8f0;--amber:#f0b429;--red:#f06060;--green:#8be0c4;
-  --font-b:'Plus Jakarta Sans',sans-serif;--font-m:'DM Mono',monospace;
+  --bg:#0d0d0f;--bg2:#141418;--s:#222228;--s2:#2a2a32;
+  --b:rgba(255,255,255,0.07);--b2:rgba(255,255,255,0.13);
+  --t:#f0ede8;--t2:#9b9891;--t3:#5c5a56;
+  --ac:#c8f060;--bl:#60a8f0;--am:#f0b429;--rd:#f06060;--gr:#8be0c4;
+  --fb:'Plus Jakarta Sans',sans-serif;--fm:'DM Mono',monospace;
 }
-body{background:var(--bg);color:var(--text);font-family:var(--font-b);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0}
-.header{width:100%;background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
-.logo{font-size:20px;font-weight:600;color:var(--accent);font-family:var(--font-m)}
-.logo span{color:var(--text2);font-weight:400}
-#status-pill{font-size:11px;font-family:var(--font-m);padding:4px 12px;border-radius:20px;background:var(--surface);border:1px solid var(--border2);color:var(--text3)}
-.wrap{width:100%;max-width:600px;padding:28px 20px 80px}
+body{background:var(--bg);color:var(--t);font-family:var(--fb);min-height:100vh}
+h1,h2,h3{font-weight:600}
+.hdr{background:var(--bg2);border-bottom:1px solid var(--b);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99}
+.logo{font-size:17px;font-weight:700;color:var(--ac);font-family:var(--fm)}
+.logo b{color:var(--t3);font-weight:400}
+#st{font-size:11px;font-family:var(--fm);padding:4px 11px;border-radius:20px;background:var(--s);border:1px solid var(--b2);color:var(--t3)}
+.wrap{max-width:660px;margin:0 auto;padding:26px 16px 100px}
 
-/* PIN SCREEN */
-#pin-screen{text-align:center;padding:40px 20px}
-#pin-screen h1{font-size:28px;font-weight:600;margin-bottom:8px}
-#pin-screen p{font-size:14px;color:var(--text2);margin-bottom:28px;line-height:1.6}
-.pin-box{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:24px;margin-bottom:16px}
-.pin-label{font-size:11px;font-family:var(--font-m);color:var(--text3);letter-spacing:.08em;margin-bottom:8px}
-.pin-input{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-size:18px;font-family:var(--font-m);padding:12px 16px;text-align:center;letter-spacing:.2em;outline:none;transition:border .2s}
-.pin-input:focus{border-color:var(--accent)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .18s;font-family:var(--font-b)}
-.btn-primary{background:var(--accent);color:#0d0d0f;width:100%;margin-top:12px}
-.btn-primary:hover{background:#d6f570}
-.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}
-.btn-ghost:hover{background:var(--surface);color:var(--text)}
-.or-divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--text3);font-size:12px}
-.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+/* PIN */
+#P{text-align:center;padding:20px 0 40px}
+#P h1{font-size:28px;margin-bottom:8px}
+#P p{font-size:14px;color:var(--t2);margin-bottom:28px;line-height:1.6}
+.pcard{background:var(--bg2);border:1px solid var(--b2);border-radius:16px;padding:22px}
+.plbl{font-size:10px;font-family:var(--fm);color:var(--t3);letter-spacing:.07em;margin-bottom:7px}
+.pinp{width:100%;background:var(--s);border:1px solid var(--b2);border-radius:10px;color:var(--t);font-size:22px;font-family:var(--fm);padding:12px;text-align:center;letter-spacing:.2em;outline:none;transition:border .2s}
+.pinp:focus{border-color:var(--ac)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:var(--fb);transition:all .18s;white-space:nowrap}
+.bpri{background:var(--ac);color:#0d0d0f;width:100%;margin-top:11px;font-size:14px;padding:13px}
+.bpri:hover{background:#d6f570}
+.bgho{background:transparent;color:var(--t2);border:1px solid var(--b2);width:100%;margin-top:8px}
+.bgho:hover{background:var(--s);color:var(--t)}
+.div{display:flex;align-items:center;gap:10px;color:var(--t3);font-size:12px;margin:14px 0}
+.div::before,.div::after{content:'';flex:1;height:1px;background:var(--b)}
 
-/* MAIN APP */
-#app-screen{display:none}
-.section-title{font-size:11px;font-family:var(--font-m);color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+/* APP */
+#A{display:none}
+.rbar{background:var(--bg2);border:1px solid var(--b);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.rpin{font-family:var(--fm);font-size:20px;color:var(--ac);letter-spacing:.15em}
+.rinfo{flex:1;min-width:0}
+.rhint{font-size:11px;color:var(--t3)}
+.peers{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.pchip{background:var(--s);border:1px solid var(--b2);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--t2);display:flex;align-items:center;gap:5px}
+.pdot{width:6px;height:6px;border-radius:50%;background:var(--gr);flex-shrink:0}
 
-/* PEERS */
-#peers-wrap{margin-bottom:20px}
-.peer-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:8px;cursor:pointer;transition:all .2s}
-.peer-card:hover{border-color:var(--accent)}
-.peer-card.selected{border-color:var(--accent);background:rgba(200,240,96,0.05)}
-.peer-avatar{width:36px;height:36px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.peer-name{font-size:13px;font-weight:600;color:var(--text)}
-.peer-status{font-size:11px;color:var(--text3);font-family:var(--font-m)}
-.peer-badge{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;font-family:var(--font-m)}
-.badge-online{background:rgba(139,224,196,.15);color:var(--green);border:1px solid rgba(139,224,196,.25)}
-.badge-self{background:rgba(200,240,96,.12);color:var(--accent);border:1px solid rgba(200,240,96,.22)}
-.no-peers{background:var(--bg2);border:1px dashed var(--border2);border-radius:12px;padding:24px;text-align:center;color:var(--text3);font-size:13px}
+/* TABS */
+.tabs{display:flex;background:var(--s);border-radius:10px;padding:3px;margin-bottom:18px;gap:3px}
+.tab{flex:1;padding:8px;border-radius:8px;border:none;background:transparent;color:var(--t2);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--fb);transition:all .18s;text-align:center}
+.tab.on{background:var(--bg2);color:var(--t);border:1px solid var(--b2)}
 
-/* UPLOAD */
-#drop-zone{background:var(--bg2);border:2px dashed rgba(200,240,96,0.2);border-radius:16px;padding:36px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px}
-#drop-zone:hover,#drop-zone.dragover{border-color:var(--accent);background:rgba(200,240,96,0.04)}
-#drop-zone .dz-icon{font-size:36px;margin-bottom:10px}
-#drop-zone .dz-title{font-size:15px;font-weight:600;margin-bottom:4px}
-#drop-zone .dz-sub{font-size:13px;color:var(--text3)}
-#file-input{display:none}
+/* SHARE PANEL */
+#share-panel{display:none}
+.dropz{background:var(--bg2);border:2px dashed rgba(200,240,96,0.2);border-radius:14px;padding:30px 18px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px}
+.dropz:hover,.dropz.over{border-color:rgba(200,240,96,0.5);background:rgba(200,240,96,0.03)}
+.dropz .di{font-size:32px;margin-bottom:8px}
+.dropz .dt{font-size:14px;font-weight:600;margin-bottom:3px}
+.dropz .ds{font-size:12px;color:var(--t3)}
+#finp{display:none}
+.shared-list{display:flex;flex-direction:column;gap:6px}
+.sitem{background:var(--bg2);border:1px solid var(--b);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px}
+.sico{font-size:22px;flex-shrink:0}
+.sname{font-size:13px;font-weight:500;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ssize{font-size:11px;color:var(--t3);font-family:var(--fm);flex-shrink:0}
+.srm{background:transparent;border:none;color:var(--t3);cursor:pointer;font-size:16px;padding:0 2px;flex-shrink:0}
+.srm:hover{color:var(--rd)}
+.sempty{background:var(--bg2);border:1px dashed var(--b2);border-radius:10px;padding:20px;text-align:center;font-size:13px;color:var(--t3)}
 
-/* FILE QUEUE */
-#file-queue{margin-bottom:16px}
-.file-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:6px}
-.file-icon{font-size:20px;flex-shrink:0}
-.file-info{flex:1;min-width:0}
-.file-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.file-size{font-size:11px;color:var(--text3);font-family:var(--font-m)}
-.file-prog{height:3px;background:var(--surface2);border-radius:2px;margin-top:6px;overflow:hidden}
-.file-prog-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
-.file-remove{background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:0 4px;flex-shrink:0}
-.file-remove:hover{color:var(--red)}
+/* BROWSE PANEL */
+#browse-panel{display:none}
+.peer-section{margin-bottom:20px}
+.pshead{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.psname{font-size:14px;font-weight:600}
+.pscount{font-size:11px;color:var(--t3);font-family:var(--fm)}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.fcard{background:var(--bg2);border:1px solid var(--b);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .2s}
+.fcard:hover{border-color:var(--b2);transform:translateY(-1px)}
+.fcard-preview{width:100%;aspect-ratio:1;background:var(--s);display:flex;align-items:center;justify-content:center;font-size:30px;position:relative;overflow:hidden}
+.fcard-preview img,.fcard-preview video{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.fcard-body{padding:8px 10px}
+.fcard-name{font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
+.fcard-size{font-size:10px;color:var(--t3);font-family:var(--fm)}
+.no-peers-browse{background:var(--bg2);border:1px dashed var(--b2);border-radius:12px;padding:28px;text-align:center;color:var(--t3);font-size:13px;line-height:1.8}
 
-/* RECEIVED FILES */
-#received-wrap{margin-top:24px}
-.recv-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.recv-from{font-size:11px;color:var(--text3);font-family:var(--font-m);margin-left:auto;flex-shrink:0}
-.btn-dl{background:var(--accent);color:#0d0d0f;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0}
-.btn-dl:hover{background:#d6f570}
+/* VIEWER MODAL */
+#viewer{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:200;flex-direction:column;align-items:center;justify-content:center}
+#viewer.open{display:flex}
+#viewer-close{position:absolute;top:16px;right:16px;background:var(--s);border:1px solid var(--b2);border-radius:8px;padding:6px 14px;color:var(--t);cursor:pointer;font-size:13px;font-family:var(--fb);z-index:201}
+#viewer-content{max-width:92vw;max-height:80vh;display:flex;align-items:center;justify-content:center}
+#viewer-content img{max-width:88vw;max-height:78vh;border-radius:8px;object-fit:contain}
+#viewer-content video{max-width:88vw;max-height:78vh;border-radius:8px;outline:none}
+#viewer-content audio{width:340px;max-width:88vw}
+#viewer-meta{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--b2);border-radius:10px;padding:10px 18px;display:flex;gap:14px;align-items:center}
+#viewer-name{font-size:13px;font-weight:500;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#viewer-dl{background:var(--ac);color:#0d0d0f;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fb)}
 
-/* SEND BTN */
-#send-btn{width:100%;padding:14px;font-size:15px;margin-top:4px;display:none}
-
-/* PROGRESS OVERLAY */
-#progress-overlay{display:none;position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:16px 20px;min-width:260px;z-index:999}
-.po-title{font-size:13px;font-weight:600;margin-bottom:10px}
-.po-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-bottom:6px}
-.po-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .2s}
-.po-text{font-size:11px;color:var(--text3);font-family:var(--font-m)}
+/* PROGRESS */
+#prog-bar{display:none;position:fixed;bottom:20px;right:20px;background:var(--bg2);border:1px solid var(--b2);border-radius:12px;padding:14px 18px;min-width:240px;z-index:100}
+.pb-title{font-size:13px;font-weight:500;margin-bottom:8px}
+.pb-track{height:5px;background:var(--s2);border-radius:3px;overflow:hidden;margin-bottom:5px}
+.pb-fill{height:100%;background:var(--ac);border-radius:3px;transition:width .15s}
+.pb-txt{font-size:11px;color:var(--t3);font-family:var(--fm)}
 
 /* TOAST */
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:10px 20px;font-size:13px;z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
-
-/* PIN DISPLAY */
-.pin-display{background:var(--surface);border-radius:10px;padding:8px 16px;font-family:var(--font-m);font-size:16px;color:var(--accent);letter-spacing:.2em;text-align:center;margin-bottom:4px}
-.pin-hint{font-size:11px;color:var(--text3);text-align:center;margin-bottom:16px}
-
-@media(max-width:500px){
-  .wrap{padding:20px 14px 80px}
-  #drop-zone{padding:24px 14px}
-}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--b2);border-radius:10px;padding:9px 18px;font-size:13px;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="logo">File<span>Bridge</span></div>
-  <div id="status-pill">Belum terhubung</div>
+<div class="hdr">
+  <div class="logo">File<b>Bridge</b></div>
+  <div id="st">Belum konek</div>
 </div>
 
 <div class="wrap">
 
 <!-- PIN SCREEN -->
-<div id="pin-screen">
-  <h1>Transfer file<br>HP ↔ Laptop</h1>
-  <p>Pakai PIN yang sama di dua perangkat.<br>File dikirim langsung — tanpa server, tanpa batas ukuran.</p>
-
-  <div class="pin-box">
-    <div class="pin-label">PIN RUANGAN KAMU</div>
-    <input class="pin-input" id="pin-input" type="text" maxlength="20" placeholder="ketik PIN bebas..." autocomplete="off" spellcheck="false">
-    <button class="btn btn-primary" onclick="joinRoom()">Masuk ↗</button>
+<div id="P">
+  <h1>Shared Files<br>HP ↔ Laptop</h1>
+  <p>Masuk PIN yang sama di semua perangkat.<br>Browse & download file langsung dari perangkat sumber.</p>
+  <div class="pcard">
+    <div class="plbl">PIN RUANGAN</div>
+    <input class="pinp" id="pinp" type="text" maxlength="20" placeholder="ketik PIN..." autocomplete="off" spellcheck="false">
+    <button class="btn bpri" onclick="join()">Masuk ruangan ↗</button>
+    <div class="div">atau</div>
+    <button class="btn bgho" onclick="rndPin()">Buat PIN acak</button>
   </div>
-
-  <div class="or-divider">atau</div>
-
-  <button class="btn btn-ghost" style="width:100%" onclick="joinRandom()">Buat PIN acak</button>
-
-  <p style="font-size:12px;color:var(--text3);margin-top:20px;line-height:1.8">
-    Ketik PIN yang sama di HP dan laptop → otomatis terhubung.<br>
-    File langsung dikirim P2P lewat WebRTC.
-  </p>
+  <p style="font-size:12px;color:var(--t3);margin-top:18px;line-height:1.8">Semua perangkat harus satu WiFi yang sama.<br>File tidak diunggah ke server — streaming langsung P2P.</p>
 </div>
 
-<!-- APP SCREEN -->
-<div id="app-screen">
-
-  <div style="margin-bottom:20px">
-    <div class="pin-label">RUANGAN AKTIF</div>
-    <div class="pin-display" id="room-display">—</div>
-    <div class="pin-hint">Buka di perangkat lain dengan PIN yang sama</div>
-    <button class="btn btn-ghost" style="font-size:12px;padding:6px 14px" onclick="leaveRoom()">Ganti PIN</button>
-  </div>
-
-  <div id="peers-wrap">
-    <div class="section-title">Perangkat terhubung</div>
-    <div id="peers-list">
-      <div class="no-peers">Menunggu perangkat lain...<br><span style="font-size:11px">Buka web ini di HP dengan PIN yang sama</span></div>
+<!-- APP -->
+<div id="A">
+  <div class="rbar">
+    <div>
+      <div class="rpin" id="rpin">—</div>
+      <div class="rhint">Buka di perangkat lain dengan PIN ini</div>
     </div>
-  </div>
-
-  <div id="upload-section">
-    <div class="section-title">Kirim file</div>
-    <div id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="dz(event,true)" ondragleave="dz(event,false)" ondrop="dzDrop(event)">
-      <div class="dz-icon">📁</div>
-      <div class="dz-title">Pilih atau drag file ke sini</div>
-      <div class="dz-sub">Foto, video, dokumen — semua tipe, semua ukuran</div>
+    <div class="rinfo">
+      <div class="peers" id="peers-row"></div>
     </div>
-    <input type="file" id="file-input" multiple onchange="addFiles(this.files)">
-    <div id="file-queue"></div>
-    <div id="peer-select-hint" style="font-size:12px;color:var(--text3);margin-bottom:8px;display:none">Pilih perangkat tujuan di atas</div>
-    <button class="btn btn-primary" id="send-btn" onclick="sendFiles()">Kirim ke perangkat yang dipilih ↗</button>
+    <button class="btn bgho" style="font-size:11px;padding:5px 12px" onclick="leave()">Ganti PIN</button>
   </div>
 
-  <div id="received-wrap" style="display:none">
-    <div class="section-title">File diterima</div>
-    <div id="received-list"></div>
+  <div class="tabs">
+    <button class="tab on" id="tab-share" onclick="switchTab('share')">📤 File saya</button>
+    <button class="tab" id="tab-browse" onclick="switchTab('browse')">📥 File perangkat lain</button>
+  </div>
+
+  <!-- SHARE PANEL -->
+  <div id="share-panel">
+    <div class="dropz" id="dropz" onclick="document.getElementById('finp').click()" ondragover="dzOver(event,true)" ondragleave="dzOver(event,false)" ondrop="dzDrop(event)">
+      <div class="di">📁</div>
+      <div class="dt">Pilih file untuk di-share</div>
+      <div class="ds">Foto, video, dokumen — semua tipe, tidak ada batas ukuran</div>
+    </div>
+    <input type="file" id="finp" multiple onchange="addShared(this.files)">
+    <div id="shared-list" class="shared-list"></div>
+  </div>
+
+  <!-- BROWSE PANEL -->
+  <div id="browse-panel">
+    <div id="browse-content"></div>
   </div>
 </div>
 
+</div>
+
+<!-- VIEWER -->
+<div id="viewer">
+  <button id="viewer-close" onclick="closeViewer()">✕ Tutup</button>
+  <div id="viewer-content"></div>
+  <div id="viewer-meta">
+    <div id="viewer-name">—</div>
+    <button id="viewer-dl" onclick="downloadCurrent()">⬇ Simpan</button>
+  </div>
 </div>
 
 <!-- PROGRESS -->
-<div id="progress-overlay">
-  <div class="po-title" id="po-title">Mengirim...</div>
-  <div class="po-bar"><div class="po-fill" id="po-fill" style="width:0%"></div></div>
-  <div class="po-text" id="po-text">0%</div>
+<div id="prog-bar">
+  <div class="pb-title" id="pb-title">Memuat...</div>
+  <div class="pb-track"><div class="pb-fill" id="pb-fill" style="width:0%"></div></div>
+  <div class="pb-txt" id="pb-txt">0%</div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-// ── CONFIG ──
-const SIGNAL_SERVER = 'wss://signaling.filippo.io'; // free public signaling
-// Fallback: use Firebase Realtime DB as signaling
-const FB_CONFIG = {
-  apiKey: "AIzaSyC5ZSDdBU_3fRo8Jm9NlaXMwcDkp93WiaA",
-  authDomain: "engineer-planner.firebaseapp.com",
-  projectId: "engineer-planner",
-  databaseURL: "https://engineer-planner-default-rtdb.asia-southeast1.firebasedatabase.app",
+// ─── CONFIG ───────────────────────────────────────────
+const FB = {
+  apiKey:"AIzaSyC5ZSDdBU_3fRo8Jm9NlaXMwcDkp93WiaA",
+  authDomain:"engineer-planner.firebaseapp.com",
+  projectId:"engineer-planner",
+  databaseURL:"https://engineer-planner-default-rtdb.asia-southeast1.firebasedatabase.app",
 };
-
-const ICE_SERVERS = [
-  { urls: 'stun:stun.l.google.com:19302' },
-  { urls: 'stun:stun1.l.google.com:19302' },
-  { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-  { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+const ICE = [
+  {urls:'stun:stun.l.google.com:19302'},
+  {urls:'stun:stun2.l.google.com:19302'},
+  {urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
+  {urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},
+  {urls:'turn:openrelay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'},
 ];
+const CHUNK = 65536;
 
-// ── STATE ──
-let myId = 'user_' + Math.random().toString(36).substr(2,8);
-let myRoom = '';
-let peers = {}; // peerId -> { pc, dc, name, status }
-let selectedPeer = null;
-let fileQueue = [];
-let db, roomRef;
-let receivedBuffers = {};
-
-// ── UTILS ──
-function toast(msg, dur=2500) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.opacity = '1';
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.style.opacity='0', dur);
-}
-
-function setStatus(msg, color='var(--text3)') {
-  const el = document.getElementById('status-pill');
-  el.textContent = msg;
-  el.style.color = color;
-}
-
-function fileIcon(name) {
-  const ext = name.split('.').pop().toLowerCase();
-  if (['jpg','jpeg','png','gif','webp','heic'].includes(ext)) return '🖼️';
-  if (['mp4','mov','avi','mkv','webm'].includes(ext)) return '🎬';
-  if (['pdf'].includes(ext)) return '📄';
-  if (['mp3','wav','aac','m4a'].includes(ext)) return '🎵';
-  if (['zip','rar','7z'].includes(ext)) return '🗜️';
-  if (['doc','docx'].includes(ext)) return '📝';
-  if (['xls','xlsx'].includes(ext)) return '📊';
-  return '📎';
-}
-
-function fmtSize(bytes) {
-  if (bytes < 1024) return bytes + ' B';
-  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
-  if (bytes < 1024*1024*1024) return (bytes/1024/1024).toFixed(1) + ' MB';
-  return (bytes/1024/1024/1024).toFixed(2) + ' GB';
-}
-
-function deviceName() {
+// ─── STATE ────────────────────────────────────────────
+const myId = 'dev_'+Math.random().toString(36).substr(2,8);
+const myName = (() => {
   const ua = navigator.userAgent;
-  if (/iPhone/.test(ua)) return '📱 iPhone';
-  if (/iPad/.test(ua)) return '📱 iPad';
-  if (/Android/.test(ua)) return '📱 Android';
-  if (/Mac/.test(ua)) return '💻 Mac';
-  if (/Windows/.test(ua)) return '🖥️ Windows';
-  return '💻 Browser';
+  if(/iPhone/.test(ua)) return '📱 iPhone';
+  if(/iPad/.test(ua))   return '📱 iPad';
+  if(/Android/.test(ua))return '📱 Android';
+  if(/Mac/.test(ua))    return '💻 Mac';
+  return '🖥️ Windows';
+})();
+
+let room='', fbDb, fbRef, fbSet, fbPush, fbOnChildAdded, fbOnValue, fbRemove, fbOff;
+let peers={}, sharedFiles=[], currentDL=null;
+
+// ─── UTILS ────────────────────────────────────────────
+const $=id=>document.getElementById(id);
+function toast(m,d=2500){const t=$('toast');t.textContent=m;t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(()=>t.style.opacity='0',d);}
+function setSt(m,c='var(--t3)'){const s=$('st');s.textContent=m;s.style.color=c;}
+function fmtSz(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB';}
+function fIcon(n){const e=n.split('.').pop().toLowerCase();
+  if(['jpg','jpeg','png','gif','webp','heic'].includes(e))return'🖼️';
+  if(['mp4','mov','avi','mkv','webm','m4v'].includes(e))return'🎬';
+  if(['mp3','wav','aac','m4a','ogg'].includes(e))return'🎵';
+  if(['pdf'].includes(e))return'📄';
+  if(['zip','rar','7z'].includes(e))return'🗜️';
+  if(['doc','docx'].includes(e))return'📝';
+  if(['xls','xlsx'].includes(e))return'📊';
+  return'📎';
+}
+function isImg(n){return/\.(jpg|jpeg|png|gif|webp|heic)$/i.test(n);}
+function isVid(n){return/\.(mp4|mov|webm|mkv|m4v|avi)$/i.test(n);}
+function isAud(n){return/\.(mp3|wav|aac|m4a|ogg)$/i.test(n);}
+
+function showProg(title,pct){
+  $('prog-bar').style.display='block';
+  $('pb-title').textContent=title;
+  $('pb-fill').style.width=pct+'%';
+  $('pb-txt').textContent=Math.round(pct)+'%';
+}
+function hideProg(){setTimeout(()=>$('prog-bar').style.display='none',600);}
+
+// ─── PIN SCREEN ───────────────────────────────────────
+function rndPin(){
+  const c='abcdefghjkmnpqrstuvwxyz23456789';
+  let p='';for(let i=0;i<6;i++)p+=c[Math.floor(Math.random()*c.length)];
+  $('pinp').value=p;
 }
 
-// ── FIREBASE SIGNALING ──
-async function initFirebase() {
-  const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-  const { getDatabase, ref, set, onValue, remove, push, onChildAdded, off } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
-  const { getAuth, signInAnonymously } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+async function join(){
+  const pin=$('pinp').value.trim().toLowerCase().replace(/\s+/g,'');
+  if(pin.length<2){toast('PIN minimal 2 karakter');return;}
+  room=pin;
+  setSt('⟳ Menghubungkan...','var(--am)');
+  try{
+    const {initializeApp}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const {getDatabase,ref,set,onValue,remove,push,onChildAdded}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+    const {getAuth,signInAnonymously}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const app=initializeApp(FB,'fb2');
+    fbDb=getDatabase(app);fbRef=ref;fbSet=set;fbOnValue=onValue;fbRemove=remove;fbPush=push;fbOnChildAdded=onChildAdded;fbOff=()=>{};
+    const auth=getAuth(app);
+    await signInAnonymously(auth);
 
-  const app = initializeApp(FB_CONFIG, 'filebridge');
-  db = getDatabase(app);
-  const auth = getAuth(app);
-  await signInAnonymously(auth);
-  window._fbDb = db;
-  window._fbRef = ref;
-  window._fbSet = set;
-  window._fbOnValue = onValue;
-  window._fbRemove = remove;
-  window._fbPush = push;
-  window._fbOnChildAdded = onChildAdded;
-  window._fbOff = off;
-  return { db, ref, set, onValue, remove, push, onChildAdded, off };
-}
+    // Announce presence with my file list
+    await announce();
 
-// ── JOIN ROOM ──
-async function joinRoom() {
-  const pin = document.getElementById('pin-input').value.trim();
-  if (!pin || pin.length < 2) { toast('PIN minimal 2 karakter'); return; }
-  myRoom = pin.toLowerCase().replace(/\s+/g,'');
-  await enterRoom();
-}
-
-async function joinRandom() {
-  const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
-  let pin = '';
-  for (let i=0;i<6;i++) pin += chars[Math.floor(Math.random()*chars.length)];
-  document.getElementById('pin-input').value = pin;
-  myRoom = pin;
-  await enterRoom();
-}
-
-async function enterRoom() {
-  setStatus('⟳ Menghubungkan...', 'var(--amber)');
-  try {
-    await initFirebase();
-    document.getElementById('pin-screen').style.display = 'none';
-    document.getElementById('app-screen').style.display = 'block';
-    document.getElementById('room-display').textContent = myRoom;
-    localStorage.setItem('fb_room', myRoom);
-
-    // Announce presence
-    const presRef = window._fbRef(window._fbDb, `rooms/${myRoom}/presence/${myId}`);
-    await window._fbSet(presRef, { id: myId, name: deviceName(), joined: Date.now() });
-
-    // Clean up on leave
-    window._leaveRef = presRef;
-
-    // Watch presence
-    const allPresRef = window._fbRef(window._fbDb, `rooms/${myRoom}/presence`);
-    window._fbOnValue(allPresRef, (snap) => {
-      const data = snap.val() || {};
-      updatePeersList(data);
+    // Watch all presence in room
+    fbOnValue(fbRef(fbDb,`r/${room}/p`),(snap)=>{
+      const data=snap.val()||{};
+      handlePresence(data);
     });
 
-    // Watch signals directed to me
-    const sigRef = window._fbRef(window._fbDb, `rooms/${myRoom}/signals/${myId}`);
-    window._fbOnChildAdded(sigRef, async (snap) => {
-      const msg = snap.val();
-      await window._fbRemove(snap.ref);
-      if (!msg) return;
-      await handleSignal(msg.from, msg);
+    // Watch signals to me
+    fbOnChildAdded(fbRef(fbDb,`r/${room}/sig/${myId}`),async(snap)=>{
+      const msg=snap.val();
+      await fbRemove(snap.ref);
+      if(msg) handleSignal(msg.from,msg);
     });
 
-    setStatus('● Terhubung — ' + myRoom, 'var(--accent)');
-    toast('✓ Masuk ruangan: ' + myRoom);
-
-  } catch(e) {
-    setStatus('✕ Gagal: ' + e.message, 'var(--red)');
-    toast('Error: ' + e.message);
+    $('P').style.display='none';
+    $('A').style.display='block';
+    $('rpin').textContent=room;
+    localStorage.setItem('fb_room',room);
+    setSt('● '+room,'var(--ac)');
+    switchTab('share');
+    toast('✓ Masuk ruangan: '+room);
+  }catch(e){
+    setSt('✕ '+e.message,'var(--rd)');
+    toast('Error: '+e.message);
     console.error(e);
   }
 }
 
-function leaveRoom() {
-  // Clean up
-  if (window._leaveRef) window._fbRemove(window._leaveRef).catch(()=>{});
-  Object.keys(peers).forEach(id => closePeer(id));
-  peers = {};
-  selectedPeer = null;
-  fileQueue = [];
-  document.getElementById('pin-screen').style.display = 'block';
-  document.getElementById('app-screen').style.display = 'none';
-  document.getElementById('file-queue').innerHTML = '';
-  document.getElementById('received-list').innerHTML = '';
-  document.getElementById('received-wrap').style.display = 'none';
-  document.getElementById('send-btn').style.display = 'none';
-  setStatus('Belum terhubung', 'var(--text3)');
+async function announce(){
+  if(!fbDb)return;
+  const fileList=sharedFiles.map(f=>({name:f.name,size:f.size,type:f.type}));
+  await fbSet(fbRef(fbDb,`r/${room}/p/${myId}`),{id:myId,name:myName,files:fileList,ts:Date.now()});
 }
 
-// ── PEERS LIST ──
-function updatePeersList(data) {
-  const list = document.getElementById('peers-list');
-  const otherPeers = Object.values(data).filter(p => p.id !== myId);
+function leave(){
+  if(fbDb) fbRemove(fbRef(fbDb,`r/${room}/p/${myId}`)).catch(()=>{});
+  Object.keys(peers).forEach(closePeer);
+  peers={};sharedFiles=[];room='';
+  $('P').style.display='block';$('A').style.display='none';
+  $('shared-list').innerHTML='';$('browse-content').innerHTML='';
+  setSt('Belum konek','var(--t3)');
+}
 
-  if (otherPeers.length === 0) {
-    list.innerHTML = '<div class="no-peers">Menunggu perangkat lain...<br><span style="font-size:11px">Buka web ini di HP dengan PIN yang sama</span></div>';
+// ─── PRESENCE ────────────────────────────────────────
+function handlePresence(data){
+  const others=Object.values(data).filter(p=>p.id!==myId);
+
+  // Remove gone peers
+  Object.keys(peers).forEach(id=>{
+    if(!data[id]) closePeer(id);
+  });
+
+  // Init new peers
+  others.forEach(peer=>{
+    if(!peers[peer.id]){
+      peers[peer.id]={name:peer.name,files:peer.files||[],dc:null,pc:null,status:'connecting'};
+      initPC(peer.id, true);
+    } else {
+      // Update file list
+      peers[peer.id].files=peer.files||[];
+    }
+  });
+
+  renderPeerChips(others);
+  if($('browse-panel').style.display!=='none') renderBrowse();
+}
+
+function renderPeerChips(others){
+  const row=$('peers-row');
+  row.innerHTML='<div class="pchip"><span class="pdot" style="background:var(--ac)"></span>'+myName+' (kamu)</div>';
+  others.forEach(p=>{
+    const connected=peers[p.id]?.dc?.readyState==='open';
+    row.innerHTML+=`<div class="pchip"><span class="pdot" style="background:${connected?'var(--gr)':'var(--am)'}"></span>${p.name}</div>`;
+  });
+}
+
+// ─── WEBRTC ──────────────────────────────────────────
+function initPC(peerId, initiator){
+  const pc=new RTCPeerConnection({iceServers:ICE});
+  peers[peerId].pc=pc;
+
+  pc.onicecandidate=e=>{
+    if(e.candidate) signal(peerId,{type:'ice',candidate:e.candidate,from:myId});
+  };
+
+  pc.onconnectionstatechange=()=>{
+    const st=pc.connectionState;
+    if(peers[peerId]) peers[peerId].status=st;
+    if(st==='connected'){
+      toast('✓ Terhubung dengan '+peers[peerId]?.name);
+      renderPeerChips(Object.values(peers).map(p=>({id:Object.keys(peers).find(k=>peers[k]===p),name:p.name})));
+      if($('browse-panel').style.display!=='none') renderBrowse();
+    }
+    if(st==='failed'||st==='disconnected') closePeer(peerId);
+  };
+
+  if(initiator){
+    const dc=pc.createDataChannel('fb',{ordered:true});
+    peers[peerId].dc=dc;
+    setupDC(peerId,dc);
+    pc.createOffer().then(o=>{pc.setLocalDescription(o);signal(peerId,{type:'offer',sdp:o,from:myId,fromName:myName});});
+  } else {
+    pc.ondatachannel=e=>{peers[peerId].dc=e.channel;setupDC(peerId,e.channel);};
+  }
+}
+
+async function handleSignal(fromId, msg){
+  if(msg.type==='offer'){
+    if(!peers[fromId]) peers[fromId]={name:msg.fromName||fromId,files:[],dc:null,pc:null,status:'connecting'};
+    const pc=new RTCPeerConnection({iceServers:ICE});
+    peers[fromId].pc=pc;
+    pc.onicecandidate=e=>{if(e.candidate)signal(fromId,{type:'ice',candidate:e.candidate,from:myId});};
+    pc.ondatachannel=e=>{peers[fromId].dc=e.channel;setupDC(fromId,e.channel);};
+    pc.onconnectionstatechange=()=>{
+      const st=pc.connectionState;
+      if(peers[fromId]) peers[fromId].status=st;
+      if(st==='connected'){
+        toast('✓ Terhubung dengan '+(msg.fromName||fromId));
+        if($('browse-panel').style.display!=='none') renderBrowse();
+      }
+      if(st==='failed'||st==='disconnected') closePeer(fromId);
+    };
+    await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+    const ans=await pc.createAnswer();
+    await pc.setLocalDescription(ans);
+    signal(fromId,{type:'answer',sdp:ans,from:myId,fromName:myName});
+  } else if(msg.type==='answer'){
+    await peers[fromId]?.pc?.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+  } else if(msg.type==='ice'){
+    try{await peers[fromId]?.pc?.addIceCandidate(new RTCIceCandidate(msg.candidate));}catch(e){}
+  } else if(msg.type==='filelist'){
+    if(peers[fromId]) peers[fromId].files=msg.files||[];
+    if($('browse-panel').style.display!=='none') renderBrowse();
+  }
+}
+
+async function signal(toId,msg){
+  if(!fbDb)return;
+  await fbPush(fbRef(fbDb,`r/${room}/sig/${toId}`),msg);
+}
+
+function closePeer(id){
+  try{peers[id]?.pc?.close();}catch(e){}
+  delete peers[id];
+  renderBrowse();
+}
+
+// ─── DATA CHANNEL ─────────────────────────────────────
+function setupDC(peerId,dc){
+  dc.binaryType='arraybuffer';
+  dc.onopen=()=>{
+    peers[peerId].status='connected';
+    // Send my file list
+    dc.send(JSON.stringify({type:'filelist',files:sharedFiles.map(f=>({name:f.name,size:f.size,type:f.type}))}));
+    renderBrowse();
+  };
+  dc.onclose=()=>{if(peers[peerId]) peers[peerId].status='closed';};
+
+  // Receive file request + stream
+  let recvMeta=null,recvBufs=[],recvBytes=0;
+  dc.onmessage=e=>{
+    if(typeof e.data==='string'){
+      const m=JSON.parse(e.data);
+      if(m.type==='filelist'){
+        if(peers[peerId]) peers[peerId].files=m.files||[];
+        if($('browse-panel').style.display!=='none') renderBrowse();
+      } else if(m.type==='req'){
+        // Someone requesting a file from me — stream it
+        streamFile(peerId, m.name);
+      } else if(m.type==='meta'){
+        recvMeta=m;recvBufs=[];recvBytes=0;
+        showProg('Memuat '+m.name,0);
+      } else if(m.type==='done'){
+        const blob=new Blob(recvBufs,{type:recvMeta?.mtype||'application/octet-stream'});
+        handleReceivedBlob(blob,recvMeta);
+        recvMeta=null;recvBufs=[];recvBytes=0;
+        hideProg();
+      }
+    } else {
+      recvBufs.push(e.data);
+      recvBytes+=e.data.byteLength;
+      if(recvMeta) showProg('Memuat '+recvMeta.name, recvBytes/recvMeta.size*100);
+    }
+  };
+}
+
+async function streamFile(peerId, fileName){
+  const f=sharedFiles.find(x=>x.name===fileName);
+  if(!f){console.warn('File not found:',fileName);return;}
+  const dc=peers[peerId]?.dc;
+  if(!dc||dc.readyState!=='open'){console.warn('DC not open');return;}
+  dc.send(JSON.stringify({type:'meta',name:f.name,size:f.size,mtype:f.type}));
+  const buf=await f.arrayBuffer();
+  let offset=0;
+  while(offset<buf.byteLength){
+    while(dc.bufferedAmount>2*1024*1024) await new Promise(r=>setTimeout(r,30));
+    dc.send(buf.slice(offset,offset+CHUNK));
+    offset+=CHUNK;
+  }
+  dc.send(JSON.stringify({type:'done',name:f.name}));
+}
+
+function requestFile(peerId, fileName){
+  const dc=peers[peerId]?.dc;
+  if(!dc||dc.readyState!=='open'){toast('Perangkat belum siap, tunggu...');return false;}
+  dc.send(JSON.stringify({type:'req',name:fileName}));
+  return true;
+}
+
+// ─── SHARED FILES (my files) ─────────────────────────
+function dzOver(e,on){e.preventDefault();$('dropz').classList.toggle('over',on);}
+function dzDrop(e){e.preventDefault();dzOver(e,false);addShared(e.dataTransfer.files);}
+
+function addShared(files){
+  Array.from(files).forEach(f=>{
+    if(!sharedFiles.find(x=>x.name===f.name&&x.size===f.size)) sharedFiles.push(f);
+  });
+  renderShared();
+  announce();
+  // Update all connected peers
+  Object.entries(peers).forEach(([id,p])=>{
+    if(p.dc?.readyState==='open'){
+      p.dc.send(JSON.stringify({type:'filelist',files:sharedFiles.map(f=>({name:f.name,size:f.size,type:f.type}))}));
+    }
+  });
+  toast('✓ '+files.length+' file di-share');
+}
+
+function removeShared(name){
+  sharedFiles=sharedFiles.filter(f=>f.name!==name);
+  renderShared();announce();
+}
+
+function renderShared(){
+  const el=$('shared-list');
+  if(sharedFiles.length===0){
+    el.innerHTML='<div class="sempty">Belum ada file yang di-share.<br>Pilih file di atas untuk mulai berbagi.</div>';
+    return;
+  }
+  el.innerHTML=sharedFiles.map(f=>`
+    <div class="sitem">
+      <div class="sico">${fIcon(f.name)}</div>
+      <div class="sname" title="${f.name}">${f.name}</div>
+      <div class="ssize">${fmtSz(f.size)}</div>
+      <button class="srm" onclick="removeShared('${f.name.replace(/'/g,"\\'")}')">×</button>
+    </div>`).join('');
+}
+
+// ─── BROWSE (other devices' files) ───────────────────
+function renderBrowse(){
+  const el=$('browse-content');
+  const peerList=Object.entries(peers).filter(([,p])=>p.files&&p.files.length>0);
+  const allPeers=Object.entries(peers);
+
+  if(allPeers.length===0){
+    el.innerHTML=`<div class="no-peers-browse">Belum ada perangkat lain di ruangan ini.<br><br>Buka halaman ini di HP dengan PIN:<br><b style="color:var(--ac);font-family:var(--fm);letter-spacing:.1em">${room}</b></div>`;
+    return;
+  }
+  if(peerList.length===0){
+    el.innerHTML=`<div class="no-peers-browse">Perangkat lain terhubung tapi belum share file.<br>Minta mereka pilih file di tab "File saya".</div>`;
     return;
   }
 
-  // Init WebRTC for new peers
-  otherPeers.forEach(peer => {
-    if (!peers[peer.id]) {
-      initPeer(peer.id, peer.name, true);
-    }
-  });
-
-  // Remove disconnected
-  Object.keys(peers).forEach(id => {
-    if (!data[id]) {
-      closePeer(id);
-    }
-  });
-
-  renderPeerCards(otherPeers);
-}
-
-function renderPeerCards(peerList) {
-  const list = document.getElementById('peers-list');
-  list.innerHTML = '';
-
-  // Show self
-  const selfCard = document.createElement('div');
-  selfCard.className = 'peer-card';
-  selfCard.style.opacity = '.6';
-  selfCard.innerHTML = `
-    <div class="peer-avatar">${deviceName().split(' ')[0]}</div>
-    <div><div class="peer-name">${deviceName()} (Kamu)</div><div class="peer-status">${myId}</div></div>
-    <span class="peer-badge badge-self">KAMU</span>`;
-  list.appendChild(selfCard);
-
-  peerList.forEach(peer => {
-    const card = document.createElement('div');
-    card.className = 'peer-card' + (selectedPeer === peer.id ? ' selected' : '');
-    card.onclick = () => selectPeer(peer.id);
-    const connected = peers[peer.id]?.dc?.readyState === 'open';
-    card.innerHTML = `
-      <div class="peer-avatar">${peer.name.split(' ')[0]}</div>
-      <div><div class="peer-name">${peer.name}</div><div class="peer-status">${connected ? 'Siap terima file' : 'Menghubungkan...'}</div></div>
-      <span class="peer-badge badge-online">${connected ? 'ONLINE' : '...'}</span>`;
-    list.appendChild(card);
-  });
-}
-
-function selectPeer(id) {
-  selectedPeer = id;
-  document.querySelectorAll('.peer-card').forEach(c => c.classList.remove('selected'));
-  event.currentTarget.classList.add('selected');
-  if (fileQueue.length > 0) document.getElementById('send-btn').style.display = 'flex';
-  toast('Dipilih: ' + (peers[id]?.name || id));
-}
-
-// ── WEBRTC ──
-async function initPeer(peerId, peerName, initiator) {
-  if (peers[peerId]?.pc) return;
-
-  const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
-  peers[peerId] = { pc, name: peerName, status: 'connecting', dc: null };
-
-  if (initiator) {
-    const dc = pc.createDataChannel('files', { ordered: true });
-    setupDataChannel(peerId, dc);
-    peers[peerId].dc = dc;
-  } else {
-    pc.ondatachannel = (e) => {
-      setupDataChannel(peerId, e.channel);
-      peers[peerId].dc = e.channel;
-    };
-  }
-
-  pc.onicecandidate = (e) => {
-    if (e.candidate) sendSignal(peerId, { type: 'candidate', candidate: e.candidate, from: myId });
-  };
-
-  pc.onconnectionstatechange = () => {
-    const state = pc.connectionState;
-    if (peers[peerId]) {
-      peers[peerId].status = state;
-      if (state === 'connected') { toast('✓ Terhubung dengan ' + peerName); renderCurrentPeers(); }
-      if (state === 'disconnected' || state === 'failed') closePeer(peerId);
-    }
-  };
-
-  if (initiator) {
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    sendSignal(peerId, { type: 'offer', sdp: offer, from: myId, fromName: deviceName() });
-  }
-}
-
-async function handleSignal(fromId, msg) {
-  if (msg.type === 'offer') {
-    if (!peers[fromId]) {
-      const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
-      peers[fromId] = { pc, name: msg.fromName || fromId, status: 'connecting', dc: null };
-      pc.ondatachannel = (e) => { setupDataChannel(fromId, e.channel); peers[fromId].dc = e.channel; };
-      pc.onicecandidate = (e) => { if(e.candidate) sendSignal(fromId, { type:'candidate', candidate:e.candidate, from:myId }); };
-      pc.onconnectionstatechange = () => {
-        if (peers[fromId]) {
-          peers[fromId].status = pc.connectionState;
-          if (pc.connectionState === 'connected') { toast('✓ Terhubung dengan ' + (msg.fromName||fromId)); renderCurrentPeers(); }
-        }
-      };
-      await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      sendSignal(fromId, { type:'answer', sdp:answer, from:myId, fromName:deviceName() });
-    }
-  } else if (msg.type === 'answer') {
-    const peer = peers[fromId];
-    if (peer?.pc) await peer.pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-  } else if (msg.type === 'candidate') {
-    const peer = peers[fromId];
-    if (peer?.pc) { try { await peer.pc.addIceCandidate(new RTCIceCandidate(msg.candidate)); } catch(e){} }
-  }
-}
-
-async function sendSignal(toId, msg) {
-  if (!window._fbDb) return;
-  const sigRef = window._fbRef(window._fbDb, `rooms/${myRoom}/signals/${toId}`);
-  await window._fbPush(sigRef, msg);
-}
-
-function closePeer(peerId) {
-  if (peers[peerId]?.pc) { try { peers[peerId].pc.close(); } catch(e){} }
-  delete peers[peerId];
-  if (selectedPeer === peerId) { selectedPeer = null; document.getElementById('send-btn').style.display='none'; }
-  renderCurrentPeers();
-}
-
-function renderCurrentPeers() {
-  const otherPeers = Object.entries(peers).map(([id,p]) => ({ id, name: p.name }));
-  if (otherPeers.length === 0) {
-    document.getElementById('peers-list').innerHTML = '<div class="no-peers">Menunggu perangkat lain...<br><span style="font-size:11px">Buka web ini di HP dengan PIN yang sama</span></div>';
-  } else {
-    renderPeerCards(otherPeers);
-  }
-}
-
-// ── DATA CHANNEL ──
-const CHUNK_SIZE = 64 * 1024; // 64KB chunks
-
-function setupDataChannel(peerId, dc) {
-  dc.binaryType = 'arraybuffer';
-  dc.onopen = () => { peers[peerId].status = 'connected'; renderCurrentPeers(); };
-  dc.onclose = () => { peers[peerId].status = 'disconnected'; };
-
-  let recvMeta = null;
-  let recvChunks = [];
-  let recvSize = 0;
-
-  dc.onmessage = (e) => {
-    if (typeof e.data === 'string') {
-      const msg = JSON.parse(e.data);
-      if (msg.type === 'meta') {
-        recvMeta = msg;
-        recvChunks = [];
-        recvSize = 0;
-        toast('📥 Menerima: ' + msg.name);
-      } else if (msg.type === 'done') {
-        const blob = new Blob(recvChunks, { type: recvMeta.mimeType || 'application/octet-stream' });
-        addReceivedFile(blob, recvMeta, peers[peerId]?.name || peerId);
-        recvMeta = null; recvChunks = []; recvSize = 0;
-      }
-    } else {
-      // Binary chunk
-      recvChunks.push(e.data);
-      recvSize += e.data.byteLength;
-      if (recvMeta) {
-        const pct = Math.round(recvSize / recvMeta.size * 100);
-        showProgress('Menerima ' + recvMeta.name, pct);
-        if (pct >= 100) hideProgress();
-      }
-    }
-  };
-}
-
-// ── FILE HANDLING ──
-function dz(e, over) { e.preventDefault(); document.getElementById('drop-zone').classList.toggle('dragover', over); }
-function dzDrop(e) { e.preventDefault(); dz(e,false); addFiles(e.dataTransfer.files); }
-
-function addFiles(files) {
-  Array.from(files).forEach(f => {
-    fileQueue.push(f);
-    renderFileQueue();
-  });
-  if (selectedPeer) document.getElementById('send-btn').style.display = 'flex';
-  else { document.getElementById('send-btn').style.display = 'flex'; }
-}
-
-function renderFileQueue() {
-  const el = document.getElementById('file-queue');
-  el.innerHTML = fileQueue.map((f,i) => `
-    <div class="file-item" id="fq-${i}">
-      <div class="file-icon">${fileIcon(f.name)}</div>
-      <div class="file-info">
-        <div class="file-name">${f.name}</div>
-        <div class="file-size">${fmtSize(f.size)}</div>
-        <div class="file-prog"><div class="file-prog-fill" id="fp-${i}" style="width:0%"></div></div>
+  el.innerHTML=peerList.map(([id,peer])=>`
+    <div class="peer-section">
+      <div class="pshead">
+        <div class="psname">${peer.name}</div>
+        <div class="pscount">${peer.files.length} file</div>
+        ${peer.dc?.readyState==='open'?'<span style="font-size:10px;color:var(--gr);font-family:var(--fm)">● ONLINE</span>':'<span style="font-size:10px;color:var(--am);font-family:var(--fm)">⟳ konek...</span>'}
       </div>
-      <button class="file-remove" onclick="removeFile(${i})">×</button>
+      <div class="fgrid">
+        ${peer.files.map(f=>`
+          <div class="fcard" onclick="openFile('${id}','${f.name.replace(/'/g,"\\'")}','${f.type||''}',${f.size})">
+            <div class="fcard-preview">
+              ${fIcon(f.name)}
+            </div>
+            <div class="fcard-body">
+              <div class="fcard-name" title="${f.name}">${f.name}</div>
+              <div class="fcard-size">${fmtSz(f.size)}</div>
+            </div>
+          </div>`).join('')}
+      </div>
     </div>`).join('');
-  if (fileQueue.length > 0) document.getElementById('send-btn').style.display = 'flex';
 }
 
-function removeFile(i) { fileQueue.splice(i,1); renderFileQueue(); if(fileQueue.length===0) document.getElementById('send-btn').style.display='none'; }
+// ─── OPEN FILE ────────────────────────────────────────
+let _currentBlob=null, _currentName='';
 
-async function sendFiles() {
-  if (!selectedPeer) { toast('Pilih dulu perangkat tujuan di atas!'); return; }
-  const peer = peers[selectedPeer];
-  if (!peer?.dc || peer.dc.readyState !== 'open') { toast('Koneksi belum siap, tunggu sebentar...'); return; }
-  const dc = peer.dc;
-
-  for (let fi = 0; fi < fileQueue.length; fi++) {
-    const file = fileQueue[fi];
-    dc.send(JSON.stringify({ type:'meta', name:file.name, size:file.size, mimeType:file.type }));
-
-    const buf = await file.arrayBuffer();
-    let offset = 0;
-    while (offset < buf.byteLength) {
-      // Wait if buffer full
-      while (dc.bufferedAmount > 1024*1024) await new Promise(r => setTimeout(r, 50));
-      const chunk = buf.slice(offset, offset + CHUNK_SIZE);
-      dc.send(chunk);
-      offset += CHUNK_SIZE;
-      const pct = Math.round(offset / buf.byteLength * 100);
-      showProgress('Mengirim ' + file.name, Math.min(pct,100));
-      const fpEl = document.getElementById('fp-'+fi);
-      if (fpEl) fpEl.style.width = Math.min(pct,100) + '%';
-    }
-    dc.send(JSON.stringify({ type:'done', name:file.name }));
-    toast('✓ Terkirim: ' + file.name);
-  }
-  hideProgress();
-  fileQueue = [];
-  renderFileQueue();
-  document.getElementById('send-btn').style.display = 'none';
+function openFile(peerId, fileName, mtype, size){
+  // Request file via DataChannel
+  toast('⟳ Memuat '+fileName+'...');
+  showProg('Memuat '+fileName, 0);
+  currentDL={peerId, fileName, mtype, size};
+  const ok=requestFile(peerId, fileName);
+  if(!ok) toast('Koneksi belum siap. Tunggu sebentar lalu coba lagi.');
 }
 
-// ── RECEIVED ──
-function addReceivedFile(blob, meta, fromName) {
-  document.getElementById('received-wrap').style.display = 'block';
-  const list = document.getElementById('received-list');
-  const url = URL.createObjectURL(blob);
-  const div = document.createElement('div');
-  div.className = 'recv-item';
+function handleReceivedBlob(blob, meta){
+  _currentBlob=blob;
+  _currentName=meta.name;
+  const url=URL.createObjectURL(blob);
+  const vc=$('viewer-content');
+  vc.innerHTML='';
+  $('viewer-name').textContent=meta.name;
 
-  let preview = '';
-  const ext = meta.name.split('.').pop().toLowerCase();
-  if (['jpg','jpeg','png','gif','webp'].includes(ext)) {
-    preview = `<img src="${url}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0">`;
-  } else if (['mp4','webm','mov'].includes(ext)) {
-    preview = `<video src="${url}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0" muted></video>`;
+  if(isImg(meta.name)){
+    const img=document.createElement('img');
+    img.src=url;vc.appendChild(img);
+  } else if(isVid(meta.name)){
+    const v=document.createElement('video');
+    v.src=url;v.controls=true;v.autoplay=true;vc.appendChild(v);
+  } else if(isAud(meta.name)){
+    const a=document.createElement('audio');
+    a.src=url;a.controls=true;vc.appendChild(a);
   } else {
-    preview = `<div style="width:44px;height:44px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${fileIcon(meta.name)}</div>`;
+    vc.innerHTML=`<div style="text-align:center;padding:40px">
+      <div style="font-size:60px;margin-bottom:16px">${fIcon(meta.name)}</div>
+      <div style="font-size:16px;font-weight:600;margin-bottom:8px">${meta.name}</div>
+      <div style="font-size:13px;color:var(--t2)">Format ini tidak bisa dipreview.<br>Klik Simpan untuk download.</div>
+    </div>`;
   }
-
-  div.innerHTML = `
-    ${preview}
-    <div class="file-info">
-      <div class="file-name">${meta.name}</div>
-      <div class="file-size">${fmtSize(meta.size)}</div>
-    </div>
-    <div class="recv-from">${fromName}</div>
-    <a href="${url}" download="${meta.name}"><button class="btn-dl">Simpan</button></a>`;
-  list.insertBefore(div, list.firstChild);
-  toast('✓ File diterima: ' + meta.name, 3000);
+  $('viewer').classList.add('open');
 }
 
-// ── PROGRESS ──
-function showProgress(title, pct) {
-  const el = document.getElementById('progress-overlay');
-  el.style.display = 'block';
-  document.getElementById('po-title').textContent = title;
-  document.getElementById('po-fill').style.width = pct + '%';
-  document.getElementById('po-text').textContent = pct + '%';
-}
-function hideProgress() {
-  setTimeout(() => { document.getElementById('progress-overlay').style.display='none'; }, 800);
+function closeViewer(){
+  $('viewer').classList.remove('open');
+  $('viewer-content').innerHTML='';
+  _currentBlob=null;
 }
 
-// ── INIT ──
-window.addEventListener('DOMContentLoaded', () => {
-  const saved = localStorage.getItem('fb_room');
-  if (saved) document.getElementById('pin-input').value = saved;
-  document.getElementById('pin-input').addEventListener('keydown', e => { if(e.key==='Enter') joinRoom(); });
+function downloadCurrent(){
+  if(!_currentBlob) return;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(_currentBlob);
+  a.download=_currentName;
+  a.click();
+}
+
+// ─── TABS ─────────────────────────────────────────────
+function switchTab(t){
+  $('tab-share').classList.toggle('on',t==='share');
+  $('tab-browse').classList.toggle('on',t==='browse');
+  $('share-panel').style.display=t==='share'?'block':'none';
+  $('browse-panel').style.display=t==='browse'?'block':'none';
+  if(t==='browse') renderBrowse();
+  if(t==='share') renderShared();
+}
+
+// ─── INIT ─────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  const saved=localStorage.getItem('fb_room');
+  if(saved) $('pinp').value=saved;
+  $('pinp').addEventListener('keydown',e=>{if(e.key==='Enter')join();});
+  renderShared();
 });
-
-window.addEventListener('beforeunload', () => {
-  if (window._leaveRef) window._fbRemove(window._leaveRef).catch(()=>{});
+window.addEventListener('beforeunload',()=>{
+  if(fbDb&&room) fbRemove(fbRef(fbDb,`r/${room}/p/${myId}`)).catch(()=>{});
 });
 </script>
 </body>
