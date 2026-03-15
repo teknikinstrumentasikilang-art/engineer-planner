@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FileBridge</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0d0f;--bg2:#141418;--bg3:#1c1c22;
+  --surface:#222228;--surface2:#2a2a32;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#f0ede8;--text2:#9b9891;--text3:#5c5a56;
+  --accent:#c8f060;--blue:#60a8f0;--amber:#f0b429;--red:#f06060;--green:#8be0c4;
+  --font-b:'Plus Jakarta Sans',sans-serif;--font-m:'DM Mono',monospace;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:0}
+.header{width:100%;background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:20px;font-weight:600;color:var(--accent);font-family:var(--font-m)}
+.logo span{color:var(--text2);font-weight:400}
+#status-pill{font-size:11px;font-family:var(--font-m);padding:4px 12px;border-radius:20px;background:var(--surface);border:1px solid var(--border2);color:var(--text3)}
+.wrap{width:100%;max-width:600px;padding:28px 20px 80px}
+
+/* PIN SCREEN */
+#pin-screen{text-align:center;padding:40px 20px}
+#pin-screen h1{font-size:28px;font-weight:600;margin-bottom:8px}
+#pin-screen p{font-size:14px;color:var(--text2);margin-bottom:28px;line-height:1.6}
+.pin-box{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:24px;margin-bottom:16px}
+.pin-label{font-size:11px;font-family:var(--font-m);color:var(--text3);letter-spacing:.08em;margin-bottom:8px}
+.pin-input{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-size:18px;font-family:var(--font-m);padding:12px 16px;text-align:center;letter-spacing:.2em;outline:none;transition:border .2s}
+.pin-input:focus{border-color:var(--accent)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .18s;font-family:var(--font-b)}
+.btn-primary{background:var(--accent);color:#0d0d0f;width:100%;margin-top:12px}
+.btn-primary:hover{background:#d6f570}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--surface);color:var(--text)}
+.or-divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:var(--text3);font-size:12px}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* MAIN APP */
+#app-screen{display:none}
+.section-title{font-size:11px;font-family:var(--font-m);color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+
+/* PEERS */
+#peers-wrap{margin-bottom:20px}
+.peer-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.peer-card:hover{border-color:var(--accent)}
+.peer-card.selected{border-color:var(--accent);background:rgba(200,240,96,0.05)}
+.peer-avatar{width:36px;height:36px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.peer-name{font-size:13px;font-weight:600;color:var(--text)}
+.peer-status{font-size:11px;color:var(--text3);font-family:var(--font-m)}
+.peer-badge{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600;font-family:var(--font-m)}
+.badge-online{background:rgba(139,224,196,.15);color:var(--green);border:1px solid rgba(139,224,196,.25)}
+.badge-self{background:rgba(200,240,96,.12);color:var(--accent);border:1px solid rgba(200,240,96,.22)}
+.no-peers{background:var(--bg2);border:1px dashed var(--border2);border-radius:12px;padding:24px;text-align:center;color:var(--text3);font-size:13px}
+
+/* UPLOAD */
+#drop-zone{background:var(--bg2);border:2px dashed rgba(200,240,96,0.2);border-radius:16px;padding:36px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px}
+#drop-zone:hover,#drop-zone.dragover{border-color:var(--accent);background:rgba(200,240,96,0.04)}
+#drop-zone .dz-icon{font-size:36px;margin-bottom:10px}
+#drop-zone .dz-title{font-size:15px;font-weight:600;margin-bottom:4px}
+#drop-zone .dz-sub{font-size:13px;color:var(--text3)}
+#file-input{display:none}
+
+/* FILE QUEUE */
+#file-queue{margin-bottom:16px}
+.file-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.file-icon{font-size:20px;flex-shrink:0}
+.file-info{flex:1;min-width:0}
+.file-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-size{font-size:11px;color:var(--text3);font-family:var(--font-m)}
+.file-prog{height:3px;background:var(--surface2);border-radius:2px;margin-top:6px;overflow:hidden}
+.file-prog-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
+.file-remove{background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:0 4px;flex-shrink:0}
+.file-remove:hover{color:var(--red)}
+
+/* RECEIVED FILES */
+#received-wrap{margin-top:24px}
+.recv-item{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.recv-from{font-size:11px;color:var(--text3);font-family:var(--font-m);margin-left:auto;flex-shrink:0}
+.btn-dl{background:var(--accent);color:#0d0d0f;border:none;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0}
+.btn-dl:hover{background:#d6f570}
+
+/* SEND BTN */
+#send-btn{width:100%;padding:14px;font-size:15px;margin-top:4px;display:none}
+
+/* PROGRESS OVERLAY */
+#progress-overlay{display:none;position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:16px 20px;min-width:260px;z-index:999}
+.po-title{font-size:13px;font-weight:600;margin-bottom:10px}
+.po-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.po-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .2s}
+.po-text{font-size:11px;color:var(--text3);font-family:var(--font-m)}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:10px 20px;font-size:13px;z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+
+/* PIN DISPLAY */
+.pin-display{background:var(--surface);border-radius:10px;padding:8px 16px;font-family:var(--font-m);font-size:16px;color:var(--accent);letter-spacing:.2em;text-align:center;margin-bottom:4px}
+.pin-hint{font-size:11px;color:var(--text3);text-align:center;margin-bottom:16px}
+
+@media(max-width:500px){
+  .wrap{padding:20px 14px 80px}
+  #drop-zone{padding:24px 14px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">File<span>Bridge</span></div>
+  <div id="status-pill">Belum terhubung</div>
+</div>
+
+<div class="wrap">
+
+<!-- PIN SCREEN -->
+<div id="pin-screen">
+  <h1>Transfer file<br>HP ↔ Laptop</h1>
+  <p>Pakai PIN yang sama di dua perangkat.<br>File dikirim langsung — tanpa server, tanpa batas ukuran.</p>
+
+  <div class="pin-box">
+    <div class="pin-label">PIN RUANGAN KAMU</div>
+    <input class="pin-input" id="pin-input" type="text" maxlength="20" placeholder="ketik PIN bebas..." autocomplete="off" spellcheck="false">
+    <button class="btn btn-primary" onclick="joinRoom()">Masuk ↗</button>
+  </div>
+
+  <div class="or-divider">atau</div>
+
+  <button class="btn btn-ghost" style="width:100%" onclick="joinRandom()">Buat PIN acak</button>
+
+  <p style="font-size:12px;color:var(--text3);margin-top:20px;line-height:1.8">
+    Ketik PIN yang sama di HP dan laptop → otomatis terhubung.<br>
+    File langsung dikirim P2P lewat WebRTC.
+  </p>
+</div>
+
+<!-- APP SCREEN -->
+<div id="app-screen">
+
+  <div style="margin-bottom:20px">
+    <div class="pin-label">RUANGAN AKTIF</div>
+    <div class="pin-display" id="room-display">—</div>
+    <div class="pin-hint">Buka di perangkat lain dengan PIN yang sama</div>
+    <button class="btn btn-ghost" style="font-size:12px;padding:6px 14px" onclick="leaveRoom()">Ganti PIN</button>
+  </div>
+
+  <div id="peers-wrap">
+    <div class="section-title">Perangkat terhubung</div>
+    <div id="peers-list">
+      <div class="no-peers">Menunggu perangkat lain...<br><span style="font-size:11px">Buka web ini di HP dengan PIN yang sama</span></div>
+    </div>
+  </div>
+
+  <div id="upload-section">
+    <div class="section-title">Kirim file</div>
+    <div id="drop-zone" onclick="document.getElementById('file-input').click()" ondragover="dz(event,true)" ondragleave="dz(event,false)" ondrop="dzDrop(event)">
+      <div class="dz-icon">📁</div>
+      <div class="dz-title">Pilih atau drag file ke sini</div>
+      <div class="dz-sub">Foto, video, dokumen — semua tipe, semua ukuran</div>
+    </div>
+    <input type="file" id="file-input" multiple onchange="addFiles(this.files)">
+    <div id="file-queue"></div>
+    <div id="peer-select-hint" style="font-size:12px;color:var(--text3);margin-bottom:8px;display:none">Pilih perangkat tujuan di atas</div>
+    <button class="btn btn-primary" id="send-btn" onclick="sendFiles()">Kirim ke perangkat yang dipilih ↗</button>
+  </div>
+
+  <div id="received-wrap" style="display:none">
+    <div class="section-title">File diterima</div>
+    <div id="received-list"></div>
+  </div>
+</div>
+
+</div>
+
+<!-- PROGRESS -->
+<div id="progress-overlay">
+  <div class="po-title" id="po-title">Mengirim...</div>
+  <div class="po-bar"><div class="po-fill" id="po-fill" style="width:0%"></div></div>
+  <div class="po-text" id="po-text">0%</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── CONFIG ──
+const SIGNAL_SERVER = 'wss://signaling.filippo.io'; // free public signaling
+// Fallback: use Firebase Realtime DB as signaling
+const FB_CONFIG = {
+  apiKey: "AIzaSyC5ZSDdBU_3fRo8Jm9NlaXMwcDkp93WiaA",
+  authDomain: "engineer-planner.firebaseapp.com",
+  projectId: "engineer-planner",
+  databaseURL: "https://engineer-planner-default-rtdb.asia-southeast1.firebasedatabase.app",
+};
+
+const ICE_SERVERS = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+  { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+];
+
+// ── STATE ──
+let myId = 'user_' + Math.random().toString(36).substr(2,8);
+let myRoom = '';
+let peers = {}; // peerId -> { pc, dc, name, status }
+let selectedPeer = null;
+let fileQueue = [];
+let db, roomRef;
+let receivedBuffers = {};
+
+// ── UTILS ──
+function toast(msg, dur=2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.style.opacity='0', dur);
+}
+
+function setStatus(msg, color='var(--text3)') {
+  const el = document.getElementById('status-pill');
+  el.textContent = msg;
+  el.style.color = color;
+}
+
+function fileIcon(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  if (['jpg','jpeg','png','gif','webp','heic'].includes(ext)) return '🖼️';
+  if (['mp4','mov','avi','mkv','webm'].includes(ext)) return '🎬';
+  if (['pdf'].includes(ext)) return '📄';
+  if (['mp3','wav','aac','m4a'].includes(ext)) return '🎵';
+  if (['zip','rar','7z'].includes(ext)) return '🗜️';
+  if (['doc','docx'].includes(ext)) return '📝';
+  if (['xls','xlsx'].includes(ext)) return '📊';
+  return '📎';
+}
+
+function fmtSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  if (bytes < 1024*1024*1024) return (bytes/1024/1024).toFixed(1) + ' MB';
+  return (bytes/1024/1024/1024).toFixed(2) + ' GB';
+}
+
+function deviceName() {
+  const ua = navigator.userAgent;
+  if (/iPhone/.test(ua)) return '📱 iPhone';
+  if (/iPad/.test(ua)) return '📱 iPad';
+  if (/Android/.test(ua)) return '📱 Android';
+  if (/Mac/.test(ua)) return '💻 Mac';
+  if (/Windows/.test(ua)) return '🖥️ Windows';
+  return '💻 Browser';
+}
+
+// ── FIREBASE SIGNALING ──
+async function initFirebase() {
+  const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+  const { getDatabase, ref, set, onValue, remove, push, onChildAdded, off } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js');
+  const { getAuth, signInAnonymously } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+
+  const app = initializeApp(FB_CONFIG, 'filebridge');
+  db = getDatabase(app);
+  const auth = getAuth(app);
+  await signInAnonymously(auth);
+  window._fbDb = db;
+  window._fbRef = ref;
+  window._fbSet = set;
+  window._fbOnValue = onValue;
+  window._fbRemove = remove;
+  window._fbPush = push;
+  window._fbOnChildAdded = onChildAdded;
+  window._fbOff = off;
+  return { db, ref, set, onValue, remove, push, onChildAdded, off };
+}
+
+// ── JOIN ROOM ──
+async function joinRoom() {
+  const pin = document.getElementById('pin-input').value.trim();
+  if (!pin || pin.length < 2) { toast('PIN minimal 2 karakter'); return; }
+  myRoom = pin.toLowerCase().replace(/\s+/g,'');
+  await enterRoom();
+}
+
+async function joinRandom() {
+  const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
+  let pin = '';
+  for (let i=0;i<6;i++) pin += chars[Math.floor(Math.random()*chars.length)];
+  document.getElementById('pin-input').value = pin;
+  myRoom = pin;
+  await enterRoom();
+}
+
+async function enterRoom() {
+  setStatus('⟳ Menghubungkan...', 'var(--amber)');
+  try {
+    await initFirebase();
+    document.getElementById('pin-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+    document.getElementById('room-display').textContent = myRoom;
+    localStorage.setItem('fb_room', myRoom);
+
+    // Announce presence
+    const presRef = window._fbRef(window._fbDb, `rooms/${myRoom}/presence/${myId}`);
+    await window._fbSet(presRef, { id: myId, name: deviceName(), joined: Date.now() });
+
+    // Clean up on leave
+    window._leaveRef = presRef;
+
+    // Watch presence
+    const allPresRef = window._fbRef(window._fbDb, `rooms/${myRoom}/presence`);
+    window._fbOnValue(allPresRef, (snap) => {
+      const data = snap.val() || {};
+      updatePeersList(data);
+    });
+
+    // Watch signals directed to me
+    const sigRef = window._fbRef(window._fbDb, `rooms/${myRoom}/signals/${myId}`);
+    window._fbOnChildAdded(sigRef, async (snap) => {
+      const msg = snap.val();
+      await window._fbRemove(snap.ref);
+      if (!msg) return;
+      await handleSignal(msg.from, msg);
+    });
+
+    setStatus('● Terhubung — ' + myRoom, 'var(--accent)');
+    toast('✓ Masuk ruangan: ' + myRoom);
+
+  } catch(e) {
+    setStatus('✕ Gagal: ' + e.message, 'var(--red)');
+    toast('Error: ' + e.message);
+    console.error(e);
+  }
+}
+
+function leaveRoom() {
+  // Clean up
+  if (window._leaveRef) window._fbRemove(window._leaveRef).catch(()=>{});
+  Object.keys(peers).forEach(id => closePeer(id));
+  peers = {};
+  selectedPeer = null;
+  fileQueue = [];
+  document.getElementById('pin-screen').style.display = 'block';
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('file-queue').innerHTML = '';
+  document.getElementById('received-list').innerHTML = '';
+  document.getElementById('received-wrap').style.display = 'none';
+  document.getElementById('send-btn').style.display = 'none';
+  setStatus('Belum terhubung', 'var(--text3)');
+}
+
+// ── PEERS LIST ──
+function updatePeersList(data) {
+  const list = document.getElementById('peers-list');
+  const otherPeers = Object.values(data).filter(p => p.id !== myId);
+
+  if (otherPeers.length === 0) {
+    list.innerHTML = '<div class="no-peers">Menunggu perangkat lain...<br><span style="font-size:11px">Buka web ini di HP dengan PIN yang sama</span></div>';
+    return;
+  }
+
+  // Init WebRTC for new peers
+  otherPeers.forEach(peer => {
+    if (!peers[peer.id]) {
+      initPeer(peer.id, peer.name, true);
+    }
+  });
+
+  // Remove disconnected
+  Object.keys(peers).forEach(id => {
+    if (!data[id]) {
+      closePeer(id);
+    }
+  });
+
+  renderPeerCards(otherPeers);
+}
+
+function renderPeerCards(peerList) {
+  const list = document.getElementById('peers-list');
+  list.innerHTML = '';
+
+  // Show self
+  const selfCard = document.createElement('div');
+  selfCard.className = 'peer-card';
+  selfCard.style.opacity = '.6';
+  selfCard.innerHTML = `
+    <div class="peer-avatar">${deviceName().split(' ')[0]}</div>
+    <div><div class="peer-name">${deviceName()} (Kamu)</div><div class="peer-status">${myId}</div></div>
+    <span class="peer-badge badge-self">KAMU</span>`;
+  list.appendChild(selfCard);
+
+  peerList.forEach(peer => {
+    const card = document.createElement('div');
+    card.className = 'peer-card' + (selectedPeer === peer.id ? ' selected' : '');
+    card.onclick = () => selectPeer(peer.id);
+    const connected = peers[peer.id]?.dc?.readyState === 'open';
+    card.innerHTML = `
+      <div class="peer-avatar">${peer.name.split(' ')[0]}</div>
+      <div><div class="peer-name">${peer.name}</div><div class="peer-status">${connected ? 'Siap terima file' : 'Menghubungkan...'}</div></div>
+      <span class="peer-badge badge-online">${connected ? 'ONLINE' : '...'}</span>`;
+    list.appendChild(card);
+  });
+}
+
+function selectPeer(id) {
+  selectedPeer = id;
+  document.querySelectorAll('.peer-card').forEach(c => c.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  if (fileQueue.length > 0) document.getElementById('send-btn').style.display = 'flex';
+  toast('Dipilih: ' + (peers[id]?.name || id));
+}
+
+// ── WEBRTC ──
+async function initPeer(peerId, peerName, initiator) {
+  if (peers[peerId]?.pc) return;
+
+  const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+  peers[peerId] = { pc, name: peerName, status: 'connecting', dc: null };
+
+  if (initiator) {
+    const dc = pc.createDataChannel('files', { ordered: true });
+    setupDataChannel(peerId, dc);
+    peers[peerId].dc = dc;
+  } else {
+    pc.ondatachannel = (e) => {
+      setupDataChannel(peerId, e.channel);
+      peers[peerId].dc = e.channel;
+    };
+  }
+
+  pc.onicecandidate = (e) => {
+    if (e.candidate) sendSignal(peerId, { type: 'candidate', candidate: e.candidate, from: myId });
+  };
+
+  pc.onconnectionstatechange = () => {
+    const state = pc.connectionState;
+    if (peers[peerId]) {
+      peers[peerId].status = state;
+      if (state === 'connected') { toast('✓ Terhubung dengan ' + peerName); renderCurrentPeers(); }
+      if (state === 'disconnected' || state === 'failed') closePeer(peerId);
+    }
+  };
+
+  if (initiator) {
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    sendSignal(peerId, { type: 'offer', sdp: offer, from: myId, fromName: deviceName() });
+  }
+}
+
+async function handleSignal(fromId, msg) {
+  if (msg.type === 'offer') {
+    if (!peers[fromId]) {
+      const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+      peers[fromId] = { pc, name: msg.fromName || fromId, status: 'connecting', dc: null };
+      pc.ondatachannel = (e) => { setupDataChannel(fromId, e.channel); peers[fromId].dc = e.channel; };
+      pc.onicecandidate = (e) => { if(e.candidate) sendSignal(fromId, { type:'candidate', candidate:e.candidate, from:myId }); };
+      pc.onconnectionstatechange = () => {
+        if (peers[fromId]) {
+          peers[fromId].status = pc.connectionState;
+          if (pc.connectionState === 'connected') { toast('✓ Terhubung dengan ' + (msg.fromName||fromId)); renderCurrentPeers(); }
+        }
+      };
+      await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      sendSignal(fromId, { type:'answer', sdp:answer, from:myId, fromName:deviceName() });
+    }
+  } else if (msg.type === 'answer') {
+    const peer = peers[fromId];
+    if (peer?.pc) await peer.pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+  } else if (msg.type === 'candidate') {
+    const peer = peers[fromId];
+    if (peer?.pc) { try { await peer.pc.addIceCandidate(new RTCIceCandidate(msg.candidate)); } catch(e){} }
+  }
+}
+
+async function sendSignal(toId, msg) {
+  if (!window._fbDb) return;
+  const sigRef = window._fbRef(window._fbDb, `rooms/${myRoom}/signals/${toId}`);
+  await window._fbPush(sigRef, msg);
+}
+
+function closePeer(peerId) {
+  if (peers[peerId]?.pc) { try { peers[peerId].pc.close(); } catch(e){} }
+  delete peers[peerId];
+  if (selectedPeer === peerId) { selectedPeer = null; document.getElementById('send-btn').style.display='none'; }
+  renderCurrentPeers();
+}
+
+function renderCurrentPeers() {
+  const otherPeers = Object.entries(peers).map(([id,p]) => ({ id, name: p.name }));
+  if (otherPeers.length === 0) {
+    document.getElementById('peers-list').innerHTML = '<div class="no-peers">Menunggu perangkat lain...<br><span style="font-size:11px">Buka web ini di HP dengan PIN yang sama</span></div>';
+  } else {
+    renderPeerCards(otherPeers);
+  }
+}
+
+// ── DATA CHANNEL ──
+const CHUNK_SIZE = 64 * 1024; // 64KB chunks
+
+function setupDataChannel(peerId, dc) {
+  dc.binaryType = 'arraybuffer';
+  dc.onopen = () => { peers[peerId].status = 'connected'; renderCurrentPeers(); };
+  dc.onclose = () => { peers[peerId].status = 'disconnected'; };
+
+  let recvMeta = null;
+  let recvChunks = [];
+  let recvSize = 0;
+
+  dc.onmessage = (e) => {
+    if (typeof e.data === 'string') {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'meta') {
+        recvMeta = msg;
+        recvChunks = [];
+        recvSize = 0;
+        toast('📥 Menerima: ' + msg.name);
+      } else if (msg.type === 'done') {
+        const blob = new Blob(recvChunks, { type: recvMeta.mimeType || 'application/octet-stream' });
+        addReceivedFile(blob, recvMeta, peers[peerId]?.name || peerId);
+        recvMeta = null; recvChunks = []; recvSize = 0;
+      }
+    } else {
+      // Binary chunk
+      recvChunks.push(e.data);
+      recvSize += e.data.byteLength;
+      if (recvMeta) {
+        const pct = Math.round(recvSize / recvMeta.size * 100);
+        showProgress('Menerima ' + recvMeta.name, pct);
+        if (pct >= 100) hideProgress();
+      }
+    }
+  };
+}
+
+// ── FILE HANDLING ──
+function dz(e, over) { e.preventDefault(); document.getElementById('drop-zone').classList.toggle('dragover', over); }
+function dzDrop(e) { e.preventDefault(); dz(e,false); addFiles(e.dataTransfer.files); }
+
+function addFiles(files) {
+  Array.from(files).forEach(f => {
+    fileQueue.push(f);
+    renderFileQueue();
+  });
+  if (selectedPeer) document.getElementById('send-btn').style.display = 'flex';
+  else { document.getElementById('send-btn').style.display = 'flex'; }
+}
+
+function renderFileQueue() {
+  const el = document.getElementById('file-queue');
+  el.innerHTML = fileQueue.map((f,i) => `
+    <div class="file-item" id="fq-${i}">
+      <div class="file-icon">${fileIcon(f.name)}</div>
+      <div class="file-info">
+        <div class="file-name">${f.name}</div>
+        <div class="file-size">${fmtSize(f.size)}</div>
+        <div class="file-prog"><div class="file-prog-fill" id="fp-${i}" style="width:0%"></div></div>
+      </div>
+      <button class="file-remove" onclick="removeFile(${i})">×</button>
+    </div>`).join('');
+  if (fileQueue.length > 0) document.getElementById('send-btn').style.display = 'flex';
+}
+
+function removeFile(i) { fileQueue.splice(i,1); renderFileQueue(); if(fileQueue.length===0) document.getElementById('send-btn').style.display='none'; }
+
+async function sendFiles() {
+  if (!selectedPeer) { toast('Pilih dulu perangkat tujuan di atas!'); return; }
+  const peer = peers[selectedPeer];
+  if (!peer?.dc || peer.dc.readyState !== 'open') { toast('Koneksi belum siap, tunggu sebentar...'); return; }
+  const dc = peer.dc;
+
+  for (let fi = 0; fi < fileQueue.length; fi++) {
+    const file = fileQueue[fi];
+    dc.send(JSON.stringify({ type:'meta', name:file.name, size:file.size, mimeType:file.type }));
+
+    const buf = await file.arrayBuffer();
+    let offset = 0;
+    while (offset < buf.byteLength) {
+      // Wait if buffer full
+      while (dc.bufferedAmount > 1024*1024) await new Promise(r => setTimeout(r, 50));
+      const chunk = buf.slice(offset, offset + CHUNK_SIZE);
+      dc.send(chunk);
+      offset += CHUNK_SIZE;
+      const pct = Math.round(offset / buf.byteLength * 100);
+      showProgress('Mengirim ' + file.name, Math.min(pct,100));
+      const fpEl = document.getElementById('fp-'+fi);
+      if (fpEl) fpEl.style.width = Math.min(pct,100) + '%';
+    }
+    dc.send(JSON.stringify({ type:'done', name:file.name }));
+    toast('✓ Terkirim: ' + file.name);
+  }
+  hideProgress();
+  fileQueue = [];
+  renderFileQueue();
+  document.getElementById('send-btn').style.display = 'none';
+}
+
+// ── RECEIVED ──
+function addReceivedFile(blob, meta, fromName) {
+  document.getElementById('received-wrap').style.display = 'block';
+  const list = document.getElementById('received-list');
+  const url = URL.createObjectURL(blob);
+  const div = document.createElement('div');
+  div.className = 'recv-item';
+
+  let preview = '';
+  const ext = meta.name.split('.').pop().toLowerCase();
+  if (['jpg','jpeg','png','gif','webp'].includes(ext)) {
+    preview = `<img src="${url}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0">`;
+  } else if (['mp4','webm','mov'].includes(ext)) {
+    preview = `<video src="${url}" style="width:44px;height:44px;border-radius:8px;object-fit:cover;flex-shrink:0" muted></video>`;
+  } else {
+    preview = `<div style="width:44px;height:44px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${fileIcon(meta.name)}</div>`;
+  }
+
+  div.innerHTML = `
+    ${preview}
+    <div class="file-info">
+      <div class="file-name">${meta.name}</div>
+      <div class="file-size">${fmtSize(meta.size)}</div>
+    </div>
+    <div class="recv-from">${fromName}</div>
+    <a href="${url}" download="${meta.name}"><button class="btn-dl">Simpan</button></a>`;
+  list.insertBefore(div, list.firstChild);
+  toast('✓ File diterima: ' + meta.name, 3000);
+}
+
+// ── PROGRESS ──
+function showProgress(title, pct) {
+  const el = document.getElementById('progress-overlay');
+  el.style.display = 'block';
+  document.getElementById('po-title').textContent = title;
+  document.getElementById('po-fill').style.width = pct + '%';
+  document.getElementById('po-text').textContent = pct + '%';
+}
+function hideProgress() {
+  setTimeout(() => { document.getElementById('progress-overlay').style.display='none'; }, 800);
+}
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('fb_room');
+  if (saved) document.getElementById('pin-input').value = saved;
+  document.getElementById('pin-input').addEventListener('keydown', e => { if(e.key==='Enter') joinRoom(); });
+});
+
+window.addEventListener('beforeunload', () => {
+  if (window._leaveRef) window._fbRemove(window._leaveRef).catch(()=>{});
+});
+</script>
+</body>
+</html>
