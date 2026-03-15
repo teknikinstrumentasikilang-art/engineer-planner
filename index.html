@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engineer Life Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0f;
+  --bg2: #141418;
+  --bg3: #1c1c22;
+  --surface: #222228;
+  --surface2: #2a2a32;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text: #f0ede8;
+  --text2: #9b9891;
+  --text3: #5c5a56;
+  --accent: #c8f060;
+  --accent2: #8be0c4;
+  --amber: #f0b429;
+  --red: #f06060;
+  --blue: #60a8f0;
+  --purple: #a088f0;
+  --coral: #f07860;
+  --r: 10px;
+  --r2: 16px;
+  --font-display: 'DM Serif Display', serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* LAYOUT */
+#app { display: flex; min-height: 100vh; }
+#sidebar {
+  width: 220px;
+  min-height: 100vh;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  transition: transform .3s;
+}
+#main {
+  margin-left: 220px;
+  flex: 1;
+  min-height: 100vh;
+  padding: 0;
+}
+.page { display: none; padding: 40px 36px 80px; max-width: 820px; }
+.page.active { display: block; animation: fadeIn .35s ease; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform:none; } }
+
+/* SIDEBAR */
+.sidebar-logo {
+  padding: 28px 22px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo h1 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.sidebar-logo p { font-size: 11px; color: var(--text3); margin-top: 3px; font-family: var(--font-mono); }
+.nav-section { padding: 16px 14px 6px; }
+.nav-section-label { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .1em; text-transform: uppercase; padding: 0 8px; margin-bottom: 4px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--r);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text2);
+  transition: all .18s;
+  border: 1px solid transparent;
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--surface); color: var(--text); }
+.nav-item.active { background: var(--surface); color: var(--text); border-color: var(--border2); }
+.nav-item.active .nav-dot { background: var(--accent); }
+.nav-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--surface2); flex-shrink: 0; transition: background .18s; }
+.nav-icon { font-size: 15px; width: 20px; text-align: center; }
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding: 16px 22px;
+  border-top: 1px solid var(--border);
+}
+.budget-pill {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  padding: 10px 12px;
+}
+.budget-pill p { font-size: 10px; color: var(--text3); font-family: var(--font-mono); }
+.budget-pill .amount { font-family: var(--font-display); font-size: 20px; color: var(--accent); margin-top: 2px; }
+
+/* MOBILE TOGGLE */
+#menu-toggle {
+  display: none;
+  position: fixed; top: 14px; right: 16px; z-index: 200;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 8px 12px; cursor: pointer;
+  font-size: 13px; color: var(--text); font-family: var(--font-body);
+}
+
+/* PAGE HEADERS */
+.page-header { margin-bottom: 32px; }
+.page-eyebrow { font-family: var(--font-mono); font-size: 11px; color: var(--text3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+.page-title { font-family: var(--font-display); font-size: 36px; color: var(--text); line-height: 1.15; }
+.page-title span { color: var(--accent); font-style: italic; }
+.page-subtitle { font-size: 14px; color: var(--text2); margin-top: 8px; max-width: 520px; }
+
+/* CARDS */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 22px 24px;
+  margin-bottom: 14px;
+}
+.card-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.card-title .ct-badge {
+  font-family: var(--font-mono); font-size: 10px; padding: 2px 8px;
+  border-radius: 20px; font-weight: 500;
+}
+.muted { color: var(--text2); }
+
+/* GRID */
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; margin-bottom: 14px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-bottom: 14px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 14px; }
+
+/* METRIC */
+.metric {
+  background: var(--surface);
+  border-radius: var(--r);
+  padding: 14px 16px;
+}
+.metric-label { font-size: 11px; color: var(--text3); font-family: var(--font-mono); margin-bottom: 4px; }
+.metric-value { font-family: var(--font-display); font-size: 24px; color: var(--text); }
+.metric-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.metric.accent .metric-value { color: var(--accent); }
+.metric.amber .metric-value { color: var(--amber); }
+.metric.blue .metric-value { color: var(--blue); }
+.metric.red .metric-value { color: var(--red); }
+
+/* ROWS */
+.data-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.data-row:last-child { border: none; padding-bottom: 0; }
+.data-row .dr-left { color: var(--text2); }
+.data-row .dr-right { font-weight: 500; color: var(--text); text-align: right; }
+
+/* BADGES */
+.badge {
+  display: inline-flex; align-items: center;
+  font-size: 10px; font-weight: 600; font-family: var(--font-mono);
+  padding: 3px 8px; border-radius: 20px;
+  letter-spacing: .04em;
+}
+.badge-green { background: rgba(139,224,196,.15); color: var(--accent2); border: 1px solid rgba(139,224,196,.25); }
+.badge-amber { background: rgba(240,180,41,.12); color: var(--amber); border: 1px solid rgba(240,180,41,.22); }
+.badge-red { background: rgba(240,96,96,.12); color: var(--red); border: 1px solid rgba(240,96,96,.22); }
+.badge-blue { background: rgba(96,168,240,.12); color: var(--blue); border: 1px solid rgba(96,168,240,.22); }
+.badge-purple { background: rgba(160,136,240,.12); color: var(--purple); border: 1px solid rgba(160,136,240,.22); }
+.badge-accent { background: rgba(200,240,96,.12); color: var(--accent); border: 1px solid rgba(200,240,96,.22); }
+
+/* PROGRESS BAR */
+.progress-wrap { background: var(--surface); border-radius: 4px; height: 8px; overflow: hidden; margin: 6px 0; }
+.progress-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+
+/* INPUTS */
+input[type=range] {
+  width: 100%; height: 4px;
+  background: var(--surface2);
+  border-radius: 2px; outline: none; border: none;
+  accent-color: var(--accent);
+  cursor: pointer; margin: 6px 0;
+}
+input[type=text], input[type=number], textarea {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 8px 12px;
+  width: 100%;
+  outline: none;
+  transition: border .18s;
+}
+input[type=text]:focus, input[type=number]:focus { border-color: var(--accent); }
+
+/* BUTTONS */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px; border-radius: var(--r);
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border: none; transition: all .18s; font-family: var(--font-body);
+}
+.btn-primary { background: var(--accent); color: var(--bg); }
+.btn-primary:hover { background: #d6f570; }
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+.btn-ghost:hover { background: var(--surface); color: var(--text); }
+
+/* TIMELINE */
+.timeline { position: relative; padding-left: 28px; }
+.timeline::before { content:''; position:absolute; left:7px; top:8px; bottom:8px; width:1px; background: var(--border2); }
+.tl-item { position: relative; margin-bottom: 24px; }
+.tl-dot {
+  position: absolute; left: -28px; top: 4px;
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--bg2);
+  background: var(--surface2);
+}
+.tl-dot.done { background: var(--accent); }
+.tl-dot.current { background: var(--amber); box-shadow: 0 0 0 4px rgba(240,180,41,.18); }
+.tl-dot.future { background: var(--surface2); }
+.tl-age { font-family: var(--font-mono); font-size: 10px; color: var(--text3); margin-bottom: 4px; }
+.tl-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.tl-items { display: flex; flex-wrap: wrap; gap: 6px; }
+.tl-tag {
+  font-size: 11px; padding: 3px 10px; border-radius: 20px;
+  background: var(--surface); color: var(--text2);
+  border: 1px solid var(--border);
+}
+
+/* RISK */
+.risk-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r2); margin-bottom: 10px;
+  overflow: hidden; cursor: pointer;
+  transition: border-color .2s;
+}
+.risk-card:hover { border-color: var(--border2); }
+.risk-header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; }
+.risk-body { padding: 0 20px 16px; font-size: 13px; color: var(--text2); line-height: 1.7; display: none; border-top: 1px solid var(--border); padding-top: 14px; }
+.risk-body.open { display: block; }
+.risk-body ul { padding-left: 18px; margin-top: 6px; }
+.risk-body li { margin-bottom: 4px; }
+
+/* PILLAR */
+.pillar {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 20px;
+  cursor: pointer; transition: all .2s;
+}
+.pillar:hover { border-color: var(--border2); transform: translateY(-2px); }
+.pillar.open { border-color: var(--accent); }
+.pillar-icon { font-size: 24px; margin-bottom: 10px; }
+.pillar-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.pillar-amount { font-family: var(--font-display); font-size: 22px; color: var(--accent); margin: 4px 0 8px; }
+.pillar-desc { font-size: 12px; color: var(--text3); }
+.pillar-detail { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); display: none; font-size: 13px; color: var(--text2); line-height: 1.7; }
+.pillar.open .pillar-detail { display: block; }
+
+/* TRACKER */
+.tracker-summary {
+  display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; margin-bottom: 16px;
+}
+.track-entry {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 14px;
+  background: var(--surface);
+  border-radius: var(--r);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+/* ALLOCATION BARS */
+.alloc-bar { display: flex; height: 32px; border-radius: var(--r); overflow: hidden; margin: 12px 0 20px; }
+.alloc-seg { display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; font-family: var(--font-mono); transition: width .6s ease; overflow: hidden; }
+.alloc-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.alloc-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); }
+.alloc-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+/* BRANDING CHECKLIST */
+.check-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.check-item:last-child { border: none; }
+.check-box {
+  width: 20px; height: 20px; border-radius: 6px;
+  border: 1.5px solid var(--border2);
+  cursor: pointer; flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .18s;
+}
+.check-box.checked { background: var(--accent); border-color: var(--accent); color: var(--bg); font-size: 11px; }
+.check-content {}
+.check-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.check-desc { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+/* INSURANCE */
+.cover-tier {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 18px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r2); margin-bottom: 10px;
+}
+.cover-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--surface); font-family: var(--font-mono);
+  font-size: 12px; display: flex; align-items: center; justify-content: center;
+  color: var(--text2); flex-shrink: 0;
+}
+.cover-num.urgent { background: rgba(240,96,96,.18); color: var(--red); }
+
+/* SEPARATOR */
+.sep { height: 1px; background: var(--border); margin: 24px 0; }
+
+/* SIMULASI */
+.sim-item {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 18px 20px;
+  margin-bottom: 10px; transition: border-color .2s;
+}
+.sim-item.winner { border-color: var(--accent); }
+.sim-bar { height: 6px; background: var(--surface2); border-radius: 3px; margin: 10px 0; overflow: hidden; }
+.sim-fill { height: 100%; border-radius: 3px; transition: width .8s ease; }
+
+/* REKENING */
+.rekening-flow { display: flex; flex-direction: column; gap: 0; }
+.flow-source {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--r); padding: 14px 18px; text-align: center;
+  margin-bottom: 8px;
+}
+.flow-arrow { text-align: center; font-size: 18px; color: var(--text3); margin: 2px 0; }
+.flow-dest { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.flow-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 14px;
+}
+.flow-card-label { font-size: 10px; font-family: var(--font-mono); color: var(--text3); margin-bottom: 4px; }
+.flow-card-amount { font-family: var(--font-display); font-size: 20px; }
+.flow-card-pct { font-size: 11px; color: var(--text3); }
+.flow-card-bank { font-size: 11px; margin-top: 6px; color: var(--text2); }
+
+@media (max-width: 700px) {
+  #sidebar { transform: translateX(-100%); }
+  #sidebar.open { transform: none; }
+  #main { margin-left: 0; }
+  .page { padding: 24px 18px 80px; }
+  #menu-toggle { display: block; }
+  .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+  .tracker-summary { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .flow-dest { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<button id="menu-toggle" onclick="toggleMenu()">☰ Menu</button>
+
+<div id="app">
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <h1>Engineer<br>Life Planner</h1>
+    <p>Padang · Electrical Eng.</p>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Beranda</div>
+    <div class="nav-item active" onclick="go('dashboard')">
+      <span class="nav-icon">◈</span><span>Dashboard</span><span class="nav-dot" style="margin-left:auto"></span>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Keuangan</div>
+    <div class="nav-item" onclick="go('alokasi')">
+      <span class="nav-icon">◎</span><span>Alokasi gaji</span><span class="nav-dot" style="margin-left:auto"></span>
+    </div>
+    <div class="nav-item" onclick="go('tracker')">
+      <span class="nav-icon">◉</span><span>Tracker warung</span><span class="nav-dot" style="margin-left:auto"></span>
+    </div>
+    <div class="nav-item" onclick="go('rekening')">
+      <span class="nav-icon">◈</span><span>Sistem rekening</span><span class="nav-dot" style="margin-left:auto"></span>
+    </div>
+    <div class="nav-item" onclick="go('simulasi')">
+      <span class="nav-icon">◇</span><span>Simulasi bisnis</span><span class="nav-dot" style="margin-left:auto"></span>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Karir & Hidup</div>
+    <div class="nav-item" onclick="go('roadmap')">
+      <span class="nav-icon">→</span><span>Roadmap umur 40</span><span class="nav-dot" style="margin-left:auto"></span>
+    </div>
+    <div class="nav-item" onclick="go('engineer')">
+      <span class="nav-icon">⚡</span><span>Engineer kaya</span><span class="nav-dot" style="margin-left:auto"></span>
+    </div>
+    <div class="nav-item" onclick="go('warung')">
+      <span class="nav-icon">◈</span><span>Upgrade warung</span><span class="nav-dot" style="margin-left:auto"></span>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Proteksi</div>
+    <div class="nav-item" onclick="go('risiko')">
+      <span class="nav-icon">⚠</span><span>Manajemen risiko</span><span class="nav-dot" style="margin-left:auto"></span>
+    </div>
+    <div class="nav-item" onclick="go('asuransi')">
+      <span class="nav-icon">♥</span><span>Kesehatan</span><span class="nav-dot" style="margin-left:auto"></span>
+    </div>
+    <div class="nav-item" onclick="go('branding')">
+      <span class="nav-icon">◎</span><span>Personal branding</span><span class="nav-dot" style="margin-left:auto"></span>
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="budget-pill">
+      <p>Modal tersedia</p>
+      <div class="amount">Rp 11 jt</div>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="page-header">
+    <div class="page-eyebrow">Selamat datang</div>
+    <h2 class="page-title">Halo, <span>Engineer!</span></h2>
+    <p class="page-subtitle">Semua rencana hidupmu dalam satu tempat. Pilih halaman dari sidebar untuk mulai.</p>
+  </div>
+
+  <div class="grid4">
+    <div class="metric accent">
+      <div class="metric-label">GAJI SEKARANG</div>
+      <div class="metric-value">11 jt</div>
+      <div class="metric-sub">per bulan</div>
+    </div>
+    <div class="metric amber">
+      <div class="metric-label">TARGET UMUR 40</div>
+      <div class="metric-value">50 jt</div>
+      <div class="metric-sub">income/bulan</div>
+    </div>
+    <div class="metric blue">
+      <div class="metric-label">PASSIVE INCOME TARGET</div>
+      <div class="metric-value">15 jt</div>
+      <div class="metric-sub">per bulan</div>
+    </div>
+    <div class="metric red">
+      <div class="metric-label">DANA DARURAT TARGET</div>
+      <div class="metric-value">66 jt</div>
+      <div class="metric-sub">6 bulan gaji</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card" style="cursor:pointer" onclick="go('roadmap')">
+      <div class="card-title">Roadmap hidup <span class="ct-badge badge-accent">5 FASE</span></div>
+      <div class="timeline" style="padding-left:20px">
+        <div class="tl-item">
+          <div class="tl-dot current" style="left:-20px"></div>
+          <div class="tl-age">Umur 23-26</div>
+          <div class="tl-title" style="font-size:13px">Pondasi — sertifikasi + bisnis</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot future" style="left:-20px"></div>
+          <div class="tl-age">Umur 26-29</div>
+          <div class="tl-title" style="font-size:13px">Tumbuh — naik jabatan + kos</div>
+        </div>
+        <div class="tl-item" style="margin-bottom:0">
+          <div class="tl-dot future" style="left:-20px"></div>
+          <div class="tl-age">Umur 40+</div>
+          <div class="tl-title" style="font-size:13px">Financial freedom</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="go('alokasi')">
+      <div class="card-title">Alokasi gaji bulan ini <span class="ct-badge badge-green">AUTO</span></div>
+      <div id="dash-alloc-bar" class="alloc-bar" style="height:20px;border-radius:6px"></div>
+      <div style="margin-top:8px">
+        <div class="data-row"><span class="dr-left">Investasi (15%)</span><span class="dr-right" style="color:var(--accent2)">Rp 1.650.000</span></div>
+        <div class="data-row"><span class="dr-left">Dana darurat (20%)</span><span class="dr-right" style="color:var(--red)">Rp 2.200.000</span></div>
+        <div class="data-row"><span class="dr-left">Senang-senang (7%)</span><span class="dr-right" style="color:var(--amber)">Rp 770.000</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="card" style="cursor:pointer;border-color:rgba(200,240,96,.2)" onclick="go('warung')">
+      <div class="card-title">Warung ibu</div>
+      <div style="font-family:var(--font-display);font-size:28px;color:var(--accent)">200 rb</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:2px">omzet/hari sekarang</div>
+      <div style="margin-top:10px;font-size:12px;color:var(--text2)">Potensi: <strong style="color:var(--accent)">500 rb/hari</strong> setelah upgrade</div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="go('risiko')">
+      <div class="card-title">Risiko aktif <span class="ct-badge badge-red">2 TINGGI</span></div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.8">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span style="color:var(--red)">●</span> Proyek selesai / PHK
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="color:var(--red)">●</span> Sakit / kecelakaan kerja
+        </div>
+      </div>
+    </div>
+    <div class="card" style="cursor:pointer" onclick="go('branding')">
+      <div class="card-title">Personal branding</div>
+      <div id="dash-progress" style="font-size:13px;color:var(--text2)">
+        <div style="margin-bottom:8px">Progress checklist</div>
+        <div class="progress-wrap"><div class="progress-fill" id="brand-dash-bar" style="width:0%;background:var(--accent)"></div></div>
+        <div id="brand-dash-pct" style="font-family:var(--font-mono);font-size:12px;margin-top:4px;color:var(--text3)">0 / 6 selesai</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Langkah paling penting minggu ini</div>
+    <div class="data-row"><span class="dr-left">1. Daftar BPJS Kesehatan & Ketenagakerjaan</span><span><span class="badge badge-red">WAJIB</span></span></div>
+    <div class="data-row"><span class="dr-left">2. Buka rekening terpisah untuk dana darurat</span><span><span class="badge badge-amber">SEGERA</span></span></div>
+    <div class="data-row"><span class="dr-left">3. Setup auto-invest Rp 1.6 jt di Bibit</span><span><span class="badge badge-amber">SEGERA</span></span></div>
+    <div class="data-row"><span class="dr-left">4. Rekrut pegawai warung ibu</span><span><span class="badge badge-blue">MINGGU INI</span></span></div>
+    <div class="data-row"><span class="dr-left">5. Foto proyek kerja → upload LinkedIn</span><span><span class="badge badge-green">MINGGU INI</span></span></div>
+  </div>
+</div>
+
+<!-- ALOKASI -->
+<div id="page-alokasi" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Keuangan</div>
+    <h2 class="page-title">Alokasi <span>gaji</span></h2>
+    <p class="page-subtitle">Proporsi tetap — nominal ikut gaji. Geser slider untuk simulasi.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Gaji bulanan</div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <input type="range" min="5" max="30" value="11" step="1" id="gaji-slider" oninput="updateAlokasi()" style="flex:1">
+      <span style="font-family:var(--font-display);font-size:24px;color:var(--accent);min-width:90px" id="gaji-val">Rp 11 jt</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Distribusi visual</div>
+    <div id="alloc-bar" class="alloc-bar"></div>
+    <div id="alloc-legend" class="alloc-legend"></div>
+    <div id="alloc-rows"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Aturan emas</div>
+    <div class="data-row"><span class="dr-left">Investasi dulu, baru sisanya dipakai</span><span><span class="badge badge-accent">PAY YOURSELF FIRST</span></span></div>
+    <div class="data-row"><span class="dr-left">Gaji naik → nominal naik, proporsi tetap sama</span><span><span class="badge badge-green">NO LIFESTYLE INFLATION</span></span></div>
+    <div class="data-row"><span class="dr-left">Rekening darurat tidak ada ATM-nya</span><span><span class="badge badge-amber">FRICTION BY DESIGN</span></span></div>
+    <div class="data-row"><span class="dr-left">Auto-debit di hari gajian, bukan manual</span><span><span class="badge badge-blue">AUTOMATE IT</span></span></div>
+  </div>
+</div>
+
+<!-- TRACKER WARUNG -->
+<div id="page-tracker" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Keuangan</div>
+    <h2 class="page-title">Tracker <span>warung</span></h2>
+    <p class="page-subtitle">Catat omzet harian, pantau profit, lihat tren mingguan.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Input hari ini</div>
+    <div class="grid2" style="margin-bottom:12px">
+      <div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:6px">Omzet (Rp)</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="range" min="50000" max="800000" value="250000" step="5000" id="omzet-slider" oninput="updateTracker()">
+          <span style="font-family:var(--font-display);color:var(--accent);min-width:70px;font-size:18px" id="omzet-val">250 rb</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:6px">Biaya bahan (Rp)</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="range" min="30000" max="500000" value="120000" step="5000" id="bahan-slider" oninput="updateTracker()">
+          <span style="font-family:var(--font-display);color:var(--amber);min-width:70px;font-size:18px" id="bahan-val">120 rb</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tracker-summary">
+    <div class="metric accent"><div class="metric-label">OMZET</div><div class="metric-value" id="t-omzet">250 rb</div></div>
+    <div class="metric"><div class="metric-label">BAHAN + PEGAWAI</div><div class="metric-value" id="t-cost">170 rb</div></div>
+    <div class="metric amber"><div class="metric-label">PROFIT BERSIH</div><div class="metric-value" id="t-profit">80 rb</div></div>
+    <div class="metric blue"><div class="metric-label">PROYEKSI/BULAN</div><div class="metric-value" id="t-monthly">2.1 jt</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Simulasi 7 hari terakhir <span class="ct-badge badge-accent">DEMO</span></div>
+    <div id="week-entries"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Template catatan harian</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:12px">Kirim ini ke ibu tiap malam via WhatsApp:</p>
+    <div style="background:var(--surface);border-radius:var(--r);padding:14px;font-family:var(--font-mono);font-size:12px;color:var(--text2);line-height:2">
+      <div>📊 Laporan Warung — [tanggal]</div>
+      <div>─────────────────</div>
+      <div>💰 Omzet : Rp ________</div>
+      <div>🛒 Belanja : Rp ________</div>
+      <div>👩 Gaji pegawai : Rp ________</div>
+      <div>─────────────────</div>
+      <div id="template-profit" style="color:var(--accent)">✅ PROFIT : Rp ________</div>
+    </div>
+  </div>
+</div>
+
+<!-- REKENING -->
+<div id="page-rekening" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Keuangan</div>
+    <h2 class="page-title">Sistem <span>rekening</span></h2>
+    <p class="page-subtitle">4 rekening terpisah. Uang dibagi otomatis di hari gajian.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Alur gaji otomatis</div>
+    <div class="rekening-flow">
+      <div class="flow-source">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:2px">SUMBER</div>
+        <div style="font-family:var(--font-display);font-size:22px;color:var(--text)">Gaji masuk — Rp 11.000.000</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:2px">Rekening utama terima gaji</div>
+      </div>
+      <div class="flow-arrow">↓ transfer otomatis dalam 1 jam</div>
+      <div class="flow-dest">
+        <div class="flow-card" style="border-color:rgba(240,96,96,.3)">
+          <div class="flow-card-label">REKENING 1</div>
+          <div class="flow-card-amount" style="color:var(--red)">Rp 2.200.000</div>
+          <div class="flow-card-pct">20% — Dana darurat</div>
+          <div class="flow-card-bank">🏦 Jenius / Bank Jago<br>Fitur: Dream Saver terkunci</div>
+        </div>
+        <div class="flow-card" style="border-color:rgba(139,224,196,.3)">
+          <div class="flow-card-label">REKENING 2</div>
+          <div class="flow-card-amount" style="color:var(--accent2)">Rp 1.650.000</div>
+          <div class="flow-card-pct">15% — Investasi</div>
+          <div class="flow-card-bank">📱 Bibit / Bareksa<br>Auto-debit tanggal gajian</div>
+        </div>
+        <div class="flow-card" style="border-color:rgba(160,136,240,.3)">
+          <div class="flow-card-label">REKENING 3</div>
+          <div class="flow-card-amount" style="color:var(--purple)">Rp 1.650.000</div>
+          <div class="flow-card-pct">15% — Bisnis & modal</div>
+          <div class="flow-card-bank">🏦 BRI / BNI bisnis<br>Khusus pengeluaran usaha</div>
+        </div>
+        <div class="flow-card" style="border-color:rgba(96,168,240,.3)">
+          <div class="flow-card-label">REKENING 4</div>
+          <div class="flow-card-amount" style="color:var(--blue)">Rp 3.300.000</div>
+          <div class="flow-card-pct">30% — Kebutuhan harian</div>
+          <div class="flow-card-bank">📱 GoPay / rekening biasa<br>Habis sebelum gajian → tahan</div>
+        </div>
+      </div>
+      <div class="flow-arrow" style="margin-top:10px">↓ sisa di rekening utama</div>
+      <div class="flow-source" style="background:var(--surface2)">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:2px">SISA (20%)</div>
+        <div style="font-family:var(--font-display);font-size:20px;color:var(--amber)">Rp 2.200.000</div>
+        <div style="font-size:12px;color:var(--text3)">Keluarga 10% + Asuransi 3% + Senang 7%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Setup langkah per langkah</div>
+    <div class="data-row"><span class="dr-left">1. Buka rekening Jenius/Jago → aktifkan Dream Saver</span><span><span class="badge badge-red">HARI INI</span></span></div>
+    <div class="data-row"><span class="dr-left">2. Install Bibit → setup Investasi Rutin Rp 1.65 jt</span><span><span class="badge badge-red">HARI INI</span></span></div>
+    <div class="data-row"><span class="dr-left">3. Buka rekening BRI/BNI terpisah untuk bisnis</span><span><span class="badge badge-amber">MINGGU INI</span></span></div>
+    <div class="data-row"><span class="dr-left">4. Set jadwal transfer otomatis di m-banking</span><span><span class="badge badge-amber">GAJIAN BERIKUTNYA</span></span></div>
+    <div class="data-row"><span class="dr-left">5. Review & sesuaikan tiap 3 bulan</span><span><span class="badge badge-green">RUTIN</span></span></div>
+  </div>
+</div>
+
+<!-- SIMULASI BISNIS -->
+<div id="page-simulasi" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Keuangan</div>
+    <h2 class="page-title">Simulasi <span>bisnis</span></h2>
+    <p class="page-subtitle">Lihat proyeksi ROI tiap opsi dari Rp 11 juta.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Proyeksi bulan ke-</div>
+    <div style="display:flex;align-items:center;gap:14px">
+      <input type="range" min="1" max="24" value="6" step="1" id="sim-bulan" oninput="updateSim()">
+      <span style="font-family:var(--font-display);font-size:22px;color:var(--accent);min-width:80px" id="sim-bulan-val">Bulan 6</span>
+    </div>
+  </div>
+
+  <div id="sim-cards"></div>
+</div>
+
+<!-- ROADMAP -->
+<div id="page-roadmap" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Karir & Hidup</div>
+    <h2 class="page-title">Roadmap <span>umur 40</span></h2>
+    <p class="page-subtitle">5 fase dari sekarang sampai financial freedom.</p>
+  </div>
+
+  <div class="card">
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot current"></div>
+        <div class="tl-age">SEKARANG — Umur 23-25</div>
+        <div class="tl-title">Fase 1 — Pondasi</div>
+        <div class="tl-items">
+          <span class="tl-tag" style="border-color:var(--amber);color:var(--amber)">Modal Rp 11 jt</span>
+          <span class="tl-tag">Sertifikasi K3 Listrik</span>
+          <span class="tl-tag">Warung ibu upgrade</span>
+          <span class="tl-tag">BPJS daftar</span>
+          <span class="tl-tag">Dana darurat mulai</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot future"></div>
+        <div class="tl-age">Umur 26-29</div>
+        <div class="tl-title">Fase 2 — Tumbuh</div>
+        <div class="tl-items">
+          <span class="tl-tag">Senior Engineer</span>
+          <span class="tl-tag">Gaji Rp 12-18 jt</span>
+          <span class="tl-tag">Kos-kosan 1-2 kamar</span>
+          <span class="tl-tag">Dana darurat Rp 66 jt selesai</span>
+          <span class="tl-tag">Investasi rutin jalan</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot future"></div>
+        <div class="tl-age">Umur 29-33</div>
+        <div class="tl-title">Fase 3 — Akselerasi</div>
+        <div class="tl-items">
+          <span class="tl-tag">Passive income Rp 3-5 jt/bln</span>
+          <span class="tl-tag">Freelance konsultan</span>
+          <span class="tl-tag">Reksadana > Rp 100 jt</span>
+          <span class="tl-tag">Gaji Rp 18-25 jt</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot future"></div>
+        <div class="tl-age">Umur 33-37</div>
+        <div class="tl-title">Fase 4 — Konsolidasi</div>
+        <div class="tl-items">
+          <span class="tl-tag">Properti 3-5 unit</span>
+          <span class="tl-tag">Passive income > Rp 10 jt/bln</span>
+          <span class="tl-tag">Net worth > Rp 1 miliar</span>
+        </div>
+      </div>
+      <div class="tl-item" style="margin-bottom:0">
+        <div class="tl-dot future" style="background:var(--accent2)"></div>
+        <div class="tl-age">Umur 40+</div>
+        <div class="tl-title" style="color:var(--accent)">Financial Freedom</div>
+        <div class="tl-items">
+          <span class="tl-tag" style="border-color:var(--accent);color:var(--accent)">Net worth > Rp 2 miliar</span>
+          <span class="tl-tag" style="border-color:var(--accent);color:var(--accent)">Passive income > Rp 15 jt/bln</span>
+          <span class="tl-tag" style="border-color:var(--accent);color:var(--accent)">Kerja karena mau, bukan harus</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Proyeksi income total semua pilar</div>
+    <div class="grid4">
+      <div class="metric"><div class="metric-label">UMUR 25</div><div class="metric-value">~7 jt</div><div class="metric-sub">/bulan</div></div>
+      <div class="metric amber"><div class="metric-label">UMUR 28</div><div class="metric-value">~15 jt</div><div class="metric-sub">/bulan</div></div>
+      <div class="metric blue"><div class="metric-label">UMUR 32</div><div class="metric-value">~28 jt</div><div class="metric-sub">/bulan</div></div>
+      <div class="metric accent"><div class="metric-label">UMUR 40</div><div class="metric-value">~50 jt</div><div class="metric-sub">/bulan</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ENGINEER KAYA -->
+<div id="page-engineer" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Karir</div>
+    <h2 class="page-title">Engineer <span>kaya</span></h2>
+    <p class="page-subtitle">4 pilar income — klik tiap pilar untuk strategi detail.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="pillar" id="p1" onclick="togglePillar('p1')">
+      <div class="pillar-icon">⚡</div>
+      <div class="pillar-title">Pilar 1 — Gaji</div>
+      <div class="pillar-amount">Rp 8–25 jt/bln</div>
+      <div class="pillar-desc">Karir engineer sebagai fondasi utama</div>
+      <div class="pillar-detail">
+        <div class="data-row"><span class="dr-left">Junior (sekarang)</span><span class="dr-right" style="color:var(--text2)">Rp 4–7 jt</span></div>
+        <div class="data-row"><span class="dr-left">+ Sertifikasi K3 + PUIL</span><span class="dr-right" style="color:var(--amber)">Rp 8–12 jt</span></div>
+        <div class="data-row"><span class="dr-left">+ Spesialisasi PLC/SCADA</span><span class="dr-right" style="color:var(--accent)">Rp 12–20 jt</span></div>
+        <div class="data-row"><span class="dr-left">Senior/Lead + Internasional</span><span class="dr-right" style="color:var(--accent)">Rp 20–25 jt+</span></div>
+      </div>
+    </div>
+    <div class="pillar" id="p2" onclick="togglePillar('p2')">
+      <div class="pillar-icon">🍜</div>
+      <div class="pillar-title">Pilar 2 — Bisnis</div>
+      <div class="pillar-amount">Rp 3–8 jt/bln</div>
+      <div class="pillar-desc">Warung + WiFi + kos-kosan</div>
+      <div class="pillar-detail">
+        <div class="data-row"><span class="dr-left">Warung ibu optimasi</span><span class="dr-right" style="color:var(--accent)">+Rp 200–300 rb/hari</span></div>
+        <div class="data-row"><span class="dr-left">WiFi voucher Starlink</span><span class="dr-right" style="color:var(--accent)">Rp 1.5–3 jt/bln</span></div>
+        <div class="data-row"><span class="dr-left">Kos-kosan 2 kamar</span><span class="dr-right" style="color:var(--accent)">Rp 800 rb–1.4 jt</span></div>
+      </div>
+    </div>
+    <div class="pillar" id="p3" onclick="togglePillar('p3')">
+      <div class="pillar-icon">🔧</div>
+      <div class="pillar-title">Pilar 3 — Freelance</div>
+      <div class="pillar-amount">Rp 2–10 jt/proyek</div>
+      <div class="pillar-desc">Konsultan & jasa elektrikal</div>
+      <div class="pillar-detail">
+        <div class="data-row"><span class="dr-left">Instalasi rumah/ruko</span><span class="dr-right" style="color:var(--amber)">Rp 500 rb–2 jt</span></div>
+        <div class="data-row"><span class="dr-left">Panel listrik industri</span><span class="dr-right" style="color:var(--amber)">Rp 3–10 jt</span></div>
+        <div class="data-row"><span class="dr-left">Audit energi gedung</span><span class="dr-right" style="color:var(--amber)">Rp 5–20 jt</span></div>
+        <div class="data-row"><span class="dr-left">Kursus/pelatihan listrik</span><span class="dr-right" style="color:var(--amber)">Rp 500 rb/peserta</span></div>
+      </div>
+    </div>
+    <div class="pillar" id="p4" onclick="togglePillar('p4')">
+      <div class="pillar-icon">📈</div>
+      <div class="pillar-title">Pilar 4 — Investasi</div>
+      <div class="pillar-amount">+20% gaji/bln</div>
+      <div class="pillar-desc">Properti + reksadana indeks</div>
+      <div class="pillar-detail">
+        <div class="data-row"><span class="dr-left">Reksadana pasar uang</span><span class="dr-right" style="color:var(--blue)">Dana darurat 6 bln</span></div>
+        <div class="data-row"><span class="dr-left">Reksadana saham indeks</span><span class="dr-right" style="color:var(--blue)">10% gaji/bln</span></div>
+        <div class="data-row"><span class="dr-left">Properti tanah/kos</span><span class="dr-right" style="color:var(--blue)">Aset fisik</span></div>
+        <div class="data-row"><span class="dr-left">Aturan 5 tahun</span><span class="dr-right" style="color:var(--text3)">Jangan dicabut</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Sertifikasi prioritas</div>
+    <div class="data-row"><span class="dr-left">K3 Listrik BNSP</span><span style="display:flex;align-items:center;gap:8px"><span style="color:var(--accent);font-size:13px">Rp 1–2 jt</span><span class="badge badge-red">PERTAMA</span></span></div>
+    <div class="data-row"><span class="dr-left">PUIL (Persyaratan Umum Instalasi Listrik)</span><span style="display:flex;align-items:center;gap:8px"><span style="color:var(--accent);font-size:13px">Rp 1.5–3 jt</span><span class="badge badge-amber">KEDUA</span></span></div>
+    <div class="data-row"><span class="dr-left">PLC / SCADA (Siemens / Omron)</span><span style="display:flex;align-items:center;gap:8px"><span style="color:var(--accent);font-size:13px">Rp 3–8 jt</span><span class="badge badge-blue">KETIGA</span></span></div>
+    <div class="data-row"><span class="dr-left">Anggota PII (Persatuan Insinyur Indonesia)</span><span style="display:flex;align-items:center;gap:8px"><span style="color:var(--accent);font-size:13px">Rp 300 rb/thn</span><span class="badge badge-green">NETWORKING</span></span></div>
+  </div>
+</div>
+
+<!-- WARUNG -->
+<div id="page-warung" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Bisnis</div>
+    <h2 class="page-title">Upgrade <span>warung</span></h2>
+    <p class="page-subtitle">Dari Rp 200K/hari → Rp 500K/hari. Ibu tidak capek lagi.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="metric"><div class="metric-label">OMZET SEKARANG</div><div class="metric-value" style="color:var(--text2)">200 rb/hari</div><div class="metric-sub">Rp 5.2 jt/bulan</div></div>
+    <div class="metric accent"><div class="metric-label">TARGET SETELAH UPGRADE</div><div class="metric-value">500 rb/hari</div><div class="metric-sub">Rp 13 jt/bulan</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Rencana upgrade — 3 bulan pertama <span class="ct-badge badge-accent">Rp 4–5 jt</span></div>
+    <div class="data-row"><span class="dr-left">Rekrut pegawai part-time (gaji Rp 600 rb/bln)</span><span><span class="badge badge-red">PRIORITAS 1</span></span></div>
+    <div class="data-row"><span class="dr-left">Upgrade peralatan masak (kompor, wajan besar)</span><span><span class="badge badge-amber">PRIORITAS 2</span></span></div>
+    <div class="data-row"><span class="dr-left">Papan menu digital / banner A-frame di depan</span><span><span class="badge badge-amber">PRIORITAS 3</span></span></div>
+    <div class="data-row"><span class="dr-left">Meja + kursi tambahan (kapasitas +8 kursi)</span><span><span class="badge badge-blue">PRIORITAS 4</span></span></div>
+    <div class="data-row"><span class="dr-left">Pasang colokan di tiap meja</span><span><span class="badge badge-green">KAMU BISA SENDIRI — GRATIS</span></span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Strategi WiFi Starlink <span class="ct-badge badge-blue">Rp 8–10 jt</span></div>
+    <div class="data-row"><span class="dr-left">Starlink dish + Mikrotik router</span><span class="dr-right">Rp 8.5 jt</span></div>
+    <div class="data-row"><span class="dr-left">Langganan Starlink/bulan</span><span class="dr-right">Rp 750 rb</span></div>
+    <div class="data-row"><span class="dr-left">Voucher jam: Rp 2.000/jam</span><span class="dr-right" style="color:var(--accent)">50 voucher/hari = Rp 100 rb</span></div>
+    <div class="data-row"><span class="dr-left">Voucher harian: Rp 10.000/hari</span><span class="dr-right" style="color:var(--accent)">20 pelanggan = Rp 200 rb</span></div>
+    <div class="data-row" style="font-weight:500"><span class="dr-left">Profit WiFi bersih/bulan (estimasi)</span><span class="dr-right" style="color:var(--accent)">Rp 1.5–2.5 jt</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Strategi ramai pelanggan</div>
+    <div class="data-row"><span class="dr-left">Daftar GoFood & GrabFood</span><span><span class="badge badge-accent">+20% OMZET</span></span></div>
+    <div class="data-row"><span class="dr-left">Paket "Makan + WiFi 2 jam = Rp 20.000"</span><span><span class="badge badge-green">VALUE BUNDLING</span></span></div>
+    <div class="data-row"><span class="dr-left">Buka jam 06.00 (sarapan) — tutup 21.00</span><span><span class="badge badge-blue">JAM STRATEGIS</span></span></div>
+    <div class="data-row"><span class="dr-left">Banner "WiFi Starlink Kencang" di depan</span><span><span class="badge badge-amber">MAGNET PELANGGAN</span></span></div>
+    <div class="data-row"><span class="dr-left">WhatsApp order + antar radius 2 km</span><span><span class="badge badge-purple">+15% OMZET</span></span></div>
+  </div>
+</div>
+
+<!-- RISIKO -->
+<div id="page-risiko" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Proteksi</div>
+    <h2 class="page-title">Manajemen <span>risiko</span></h2>
+    <p class="page-subtitle">Klik tiap risiko untuk lihat strategi mitigasi.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Target dana darurat</div>
+    <div class="grid2" style="margin-bottom:0">
+      <div class="metric red"><div class="metric-label">TARGET</div><div class="metric-value">Rp 66 jt</div><div class="metric-sub">6 × Rp 11 jt pengeluaran</div></div>
+      <div class="metric amber"><div class="metric-label">STRATEGI KUMPULKAN</div><div class="metric-value">22 bln</div><div class="metric-sub">Rp 3 jt/bulan → 22 bulan</div></div>
+    </div>
+  </div>
+
+  <div class="risk-card" onclick="toggleRisk(this)">
+    <div class="risk-header"><span class="badge badge-red">TINGGI</span><div><div style="font-size:14px;font-weight:600">Proyek selesai / di-PHK</div><div style="font-size:12px;color:var(--text3)">Income utama tiba-tiba hilang</div></div><span style="margin-left:auto;color:var(--text3)">▾</span></div>
+    <div class="risk-body"><ul><li>Dana darurat 6 bulan gaji = Rp 66 jt — kumpulkan Rp 3 jt/bulan</li><li>Bangun passive income minimal Rp 3 jt/bulan sebelum proyek selesai</li><li>Update LinkedIn & CV setiap 3 bulan, aktif di komunitas engineer</li><li>Jangan bergantung pada 1 sumber income saja</li></ul></div>
+  </div>
+
+  <div class="risk-card" onclick="toggleRisk(this)">
+    <div class="risk-header"><span class="badge badge-red">TINGGI</span><div><div style="font-size:14px;font-weight:600">Sakit / kecelakaan kerja</div><div style="font-size:12px;color:var(--text3)">Tidak bisa kerja berminggu-minggu</div></div><span style="margin-left:auto;color:var(--text3)">▾</span></div>
+    <div class="risk-body"><ul><li>Daftar BPJS Kesehatan + BPJS Ketenagakerjaan secepatnya</li><li>Asuransi personal accident Rp 100–200 rb/bulan — wajib untuk engineer lapangan</li><li>Pastikan warung ibu bisa jalan tanpa kehadiran kamu</li></ul></div>
+  </div>
+
+  <div class="risk-card" onclick="toggleRisk(this)">
+    <div class="risk-header"><span class="badge badge-amber">SEDANG</span><div><div style="font-size:14px;font-weight:600">Starlink / WiFi tidak laku</div><div style="font-size:12px;color:var(--text3)">Modal Rp 9.5 jt tidak balik</div></div><span style="margin-left:auto;color:var(--text3)">▾</span></div>
+    <div class="risk-body"><ul><li>Survey dulu: tanya 10–15 orang sekitar warung sebelum beli perangkat</li><li>Mulai kecil: uji dulu dengan router biasa + internet rumah</li><li>Kalau gagal di warung: pindahkan lokasi atau jual di marketplace (Starlink laku)</li></ul></div>
+  </div>
+
+  <div class="risk-card" onclick="toggleRisk(this)">
+    <div class="risk-header"><span class="badge badge-amber">SEDANG</span><div><div style="font-size:14px;font-weight:600">Pegawai warung tidak jujur / resign</div><div style="font-size:12px;color:var(--text3)">Operasional terganggu</div></div><span style="margin-left:auto;color:var(--text3)">▾</span></div>
+    <div class="risk-body"><ul><li>Catat omzet harian dan bandingkan dengan stok — anomali langsung terlihat</li><li>Sistem gaji: gaji pokok + bonus kalau omzet di atas target</li><li>Latih minimal 2 orang agar tidak ketergantungan</li></ul></div>
+  </div>
+
+  <div class="risk-card" onclick="toggleRisk(this)">
+    <div class="risk-header"><span class="badge badge-green">RENDAH</span><div><div style="font-size:14px;font-weight:600">Investasi / reksadana merugi</div><div style="font-size:12px;color:var(--text3)">Nilai portofolio turun sementara</div></div><span style="margin-left:auto;color:var(--text3)">▾</span></div>
+    <div class="risk-body"><ul><li>Investasi hanya uang yang tidak akan dipakai minimal 5 tahun</li><li>Pakai reksadana indeks (diversified) — jangan saham individual dulu</li><li>Jangan panik jual saat turun — pasar selalu pulih dalam 3–5 tahun</li></ul></div>
+  </div>
+</div>
+
+<!-- ASURANSI -->
+<div id="page-asuransi" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Proteksi</div>
+    <h2 class="page-title">Kesehatan & <span>asuransi</span></h2>
+    <p class="page-subtitle">Total Rp 250 rb/bulan untuk perlindungan lengkap.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="metric red"><div class="metric-label">BIAYA PROTEKSI MINIMAL</div><div class="metric-value">250 rb</div><div class="metric-sub">per bulan — wajib</div></div>
+    <div class="metric amber"><div class="metric-label">DANA KESEHATAN DARURAT</div><div class="metric-value">5 jt</div><div class="metric-sub">target rekening khusus</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Urutan perlindungan — dari yang paling wajib</div>
+    <div class="cover-tier">
+      <div class="cover-num urgent">1</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:600">BPJS Kesehatan</div><div style="font-size:12px;color:var(--text3)">Iuran mandiri kelas 2</div></div>
+      <div style="text-align:right"><div style="font-size:14px;font-weight:600;color:var(--accent)">Rp 100 rb/bln</div><span class="badge badge-red">WAJIB SEGERA</span></div>
+    </div>
+    <div class="cover-tier">
+      <div class="cover-num urgent">2</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:600">BPJS Ketenagakerjaan</div><div style="font-size:12px;color:var(--text3)">JHT + JKK + JKM</div></div>
+      <div style="text-align:right"><div style="font-size:14px;font-weight:600;color:var(--accent)">~Rp 150 rb/bln</div><span class="badge badge-red">WAJIB SEGERA</span></div>
+    </div>
+    <div class="cover-tier">
+      <div class="cover-num" style="background:rgba(240,180,41,.18);color:var(--amber)">3</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:600">Asuransi personal accident</div><div style="font-size:12px;color:var(--text3)">Engineer lapangan = risiko tinggi</div></div>
+      <div style="text-align:right"><div style="font-size:14px;font-weight:600;color:var(--amber)">Rp 100–200 rb/bln</div><span class="badge badge-amber">PENTING</span></div>
+    </div>
+    <div class="cover-tier">
+      <div class="cover-num" style="background:rgba(96,168,240,.18);color:var(--blue)">4</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:600">Asuransi jiwa term life</div><div style="font-size:12px;color:var(--text3)">Proteksi keluarga ibu</div></div>
+      <div style="text-align:right"><div style="font-size:14px;font-weight:600;color:var(--blue)">Rp 150–300 rb/bln</div><span class="badge badge-blue">SAAT ADA TANGGUNGAN</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Kesehatan fisik = aset utama kamu</div>
+    <div class="data-row"><span class="dr-left">Olahraga 3×/minggu</span><span><span class="badge badge-accent">GRATIS — RETURN TERBESAR</span></span></div>
+    <div class="data-row"><span class="dr-left">Medical check-up setahun sekali (pakai BPJS)</span><span><span class="badge badge-green">GRATIS DI PUSKESMAS</span></span></div>
+    <div class="data-row"><span class="dr-left">Dana kesehatan darurat Rp 200 rb/bln → target Rp 5 jt</span><span><span class="badge badge-amber">REKENING TERPISAH</span></span></div>
+    <div class="data-row"><span class="dr-left">Tidur 7–8 jam — engineer lapangan butuh recovery</span><span><span class="badge badge-blue">PRODUKTIVITAS +30%</span></span></div>
+  </div>
+</div>
+
+<!-- BRANDING -->
+<div id="page-branding" class="page">
+  <div class="page-header">
+    <div class="page-eyebrow">Karir</div>
+    <h2 class="page-title">Personal <span>branding</span></h2>
+    <p class="page-subtitle">Centang yang sudah dilakukan. Engineer yang terlihat = engineer yang dapat tawaran.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Progress branding kamu</div>
+    <div class="progress-wrap" style="height:12px"><div class="progress-fill" id="brand-main-bar" style="width:0%;background:var(--accent)"></div></div>
+    <div id="brand-pct" style="font-family:var(--font-mono);font-size:13px;color:var(--text3);margin-top:6px">0 / 6 checklist selesai</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Checklist aksi</div>
+    <div id="checklist"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Target 6 bulan pertama</div>
+    <div class="data-row"><span class="dr-left">Koneksi LinkedIn</span><span class="dr-right" style="color:var(--accent)">500+</span></div>
+    <div class="data-row"><span class="dr-left">Klien freelance pertama</span><span class="dr-right" style="color:var(--accent)">1 proyek</span></div>
+    <div class="data-row"><span class="dr-left">Post LinkedIn / konten</span><span class="dr-right" style="color:var(--accent)">1 per minggu</span></div>
+    <div class="data-row"><span class="dr-left">Review di Google Maps warung</span><span class="dr-right" style="color:var(--accent)">10+ ulasan</span></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+const pages = ['dashboard','alokasi','tracker','rekening','simulasi','roadmap','engineer','warung','risiko','asuransi','branding'];
+
+function go(id) {
+  pages.forEach(p => {
+    document.getElementById('page-'+p).classList.remove('active');
+  });
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('active');
+  });
+  document.getElementById('sidebar').classList.remove('open');
+  window.scrollTo(0,0);
+  if (id === 'simulasi') updateSim();
+  if (id === 'alokasi') updateAlokasi();
+}
+
+function toggleMenu() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ALOKASI
+const allocData = [
+  {label:'Dana darurat', pct:20, color:'#f06060', hint:'Kumpulkan sampai Rp 66 jt'},
+  {label:'Investasi', pct:15, color:'#8be0c4', hint:'Reksadana indeks — auto tiap gajian'},
+  {label:'Bisnis/modal', pct:15, color:'#a088f0', hint:'Warung, Starlink, kos'},
+  {label:'Kebutuhan', pct:30, color:'#60a8f0', hint:'Makan, transport, tagihan'},
+  {label:'Keluarga', pct:10, color:'#f07860', hint:'Kiriman rutin ibu'},
+  {label:'Asuransi', pct:3, color:'#f0b429', hint:'BPJS + PA'},
+  {label:'Senang', pct:7, color:'#c8f060', hint:'Hiburan — nikmati tapi terbatas'},
+];
+
+function updateAlokasi() {
+  const g = parseInt(document.getElementById('gaji-slider').value) * 1e6;
+  document.getElementById('gaji-val').textContent = 'Rp ' + document.getElementById('gaji-slider').value + ' jt';
+  const bar = document.getElementById('alloc-bar');
+  if (bar) bar.innerHTML = allocData.map(a => `<div class="alloc-seg" style="width:${a.pct}%;background:${a.color};color:${a.color==='#c8f060'?'#1a1a1a':'rgba(255,255,255,0.85)'}">${a.pct>=8?a.pct+'%':''}</div>`).join('');
+  const dashBar = document.getElementById('dash-alloc-bar');
+  if (dashBar) dashBar.innerHTML = allocData.map(a => `<div style="flex:${a.pct};background:${a.color}"></div>`).join('');
+  const legend = document.getElementById('alloc-legend');
+  if (legend) legend.innerHTML = allocData.map(a => `<div class="alloc-legend-item"><div class="alloc-dot" style="background:${a.color}"></div>${a.label} ${a.pct}%</div>`).join('');
+  const rows = document.getElementById('alloc-rows');
+  if (rows) rows.innerHTML = allocData.map(a => `
+    <div class="data-row">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border-radius:2px;background:${a.color};display:inline-block;flex-shrink:0"></span>
+        <div><div class="dr-left">${a.label}</div><div style="font-size:11px;color:var(--text3)">${a.hint}</div></div>
+      </div>
+      <div style="text-align:right">
+        <div class="dr-right">Rp ${Math.round(g*a.pct/100/1000).toLocaleString('id')} rb</div>
+        <div style="font-size:11px;color:var(--text3)">${a.pct}%</div>
+      </div>
+    </div>`).join('');
+}
+updateAlokasi();
+
+// TRACKER
+function updateTracker() {
+  const o = parseInt(document.getElementById('omzet-slider').value);
+  const b = parseInt(document.getElementById('bahan-slider').value);
+  document.getElementById('omzet-val').textContent = Math.round(o/1000) + ' rb';
+  document.getElementById('bahan-val').textContent = Math.round(b/1000) + ' rb';
+  const pegawai = 50000;
+  const profit = Math.max(0, o - b - pegawai);
+  document.getElementById('t-omzet').textContent = Math.round(o/1000) + ' rb';
+  document.getElementById('t-cost').textContent = Math.round((b+pegawai)/1000) + ' rb';
+  document.getElementById('t-profit').textContent = Math.round(profit/1000) + ' rb';
+  document.getElementById('t-monthly').textContent = (profit*26/1e6).toFixed(1) + ' jt';
+}
+updateTracker();
+
+// Demo week entries
+const weekData = [
+  {day:'Sen', omzet:280000, bahan:130000},
+  {day:'Sel', omzet:310000, bahan:140000},
+  {day:'Rab', omzet:260000, bahan:120000},
+  {day:'Kam', omzet:340000, bahan:155000},
+  {day:'Jum', omzet:390000, bahan:170000},
+  {day:'Sab', omzet:420000, bahan:180000},
+  {day:'Min', omzet:280000, bahan:125000},
+];
+const weekEl = document.getElementById('week-entries');
+if (weekEl) {
+  weekEl.innerHTML = weekData.map(d => {
+    const profit = d.omzet - d.bahan - 50000;
+    const margin = Math.round(profit/d.omzet*100);
+    return `<div class="track-entry">
+      <span style="font-family:var(--font-mono);font-size:12px;color:var(--text3);min-width:32px">${d.day}</span>
+      <span style="color:var(--text2);font-size:13px">Omzet <strong style="color:var(--text)">Rp ${Math.round(d.omzet/1000)}rb</strong></span>
+      <span style="color:var(--accent);font-size:13px;font-weight:600">+Rp ${Math.round(profit/1000)}rb</span>
+      <span class="badge badge-green">${margin}% margin</span>
+    </div>`;
+  }).join('');
+}
+
+// SIMULASI
+const simBisnis = [
+  {nama:'Warung ibu (optimasi)', modal:4e6, color:'#8be0c4', recommended:false,
+   monthly: b => b<=2?2500000:b<=4?3500000:4500000, biaya:1800000, desc:'Rekrut pegawai + upgrade peralatan'},
+  {nama:'WiFi voucher Starlink', modal:9.5e6, color:'#60a8f0', recommended:false,
+   monthly: b => b<=1?300000:b<=3?900000:b<=6?1800000:2500000, biaya:750000, desc:'Starlink + Mikrotik + voucher harian'},
+  {nama:'Kombinasi warung + WiFi', modal:11e6, color:'#c8f060', recommended:true,
+   monthly: b => b<=2?3200000:b<=4?4800000:b<=6?6500000:7500000, biaya:2550000, desc:'Sinergi terbaik — 1 lokasi 2 usaha'},
+  {nama:'Sertifikasi engineer', modal:3e6, color:'#f0b429', recommended:false,
+   monthly: b => b<=5?0:b<=8?1500000:3000000, biaya:0, desc:'Kenaikan gaji permanen setelah lulus'},
+];
+
+function updateSim() {
+  const b = parseInt(document.getElementById('sim-bulan').value);
+  document.getElementById('sim-bulan-val').textContent = 'Bulan ' + b;
+  const maxRoi = Math.max(...simBisnis.map(x => {
+    const total = (x.monthly(b) - x.biaya) * b;
+    return total / x.modal * 100;
+  }));
+  document.getElementById('sim-cards').innerHTML = simBisnis.map(x => {
+    const bersih = x.monthly(b) - x.biaya;
+    const total = bersih * b;
+    const roi = Math.round(total / x.modal * 100);
+    const bep = bersih > 0 ? Math.ceil(x.modal / bersih) : 999;
+    const barPct = Math.min(100, Math.max(0, roi / maxRoi * 100));
+    return `<div class="sim-item ${x.recommended?'winner':''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div>
+          ${x.recommended?`<span class="badge badge-accent" style="margin-bottom:6px;display:inline-block">REKOMENDASI</span><br>`:''}
+          <span style="font-size:14px;font-weight:600">${x.nama}</span><br>
+          <span style="font-size:12px;color:var(--text3)">${x.desc}</span>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--font-display);font-size:22px;color:${roi>=0?'var(--accent)':'var(--red)'}">${roi>=0?'+':''}${roi}%</div>
+          <div style="font-size:11px;color:var(--text3)">ROI</div>
+        </div>
+      </div>
+      <div class="sim-bar"><div class="sim-fill" style="width:${barPct}%;background:${x.color}"></div></div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px">
+        <div class="data-row" style="padding:4px 0"><span class="dr-left">Modal</span><span class="dr-right">Rp ${(x.modal/1e6).toFixed(1)} jt</span></div>
+        <div class="data-row" style="padding:4px 0"><span class="dr-left">Profit/bln</span><span class="dr-right" style="color:var(--accent)">Rp ${(Math.max(0,bersih)/1e6).toFixed(1)} jt</span></div>
+        <div class="data-row" style="padding:4px 0;border:none"><span class="dr-left">Balik modal</span><span class="dr-right">${bep>=100?'Belum':bep+' bulan'}</span></div>
+        <div class="data-row" style="padding:4px 0;border:none"><span class="dr-left">Total profit</span><span class="dr-right" style="color:var(--accent2)">Rp ${(Math.max(0,total)/1e6).toFixed(1)} jt</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// BRANDING CHECKLIST
+const checkItems = [
+  {title:'Aktifkan / lengkapi LinkedIn', desc:'Foto profesional, headline "Electrical Engineer | K3 Listrik | Padang"'},
+  {title:'Setup WhatsApp Business', desc:'Bio jelas, foto profil profesional, status aktif konsultasi'},
+  {title:'Foto portofolio proyek kerja', desc:'Foto panel listrik, instalasi, hasil akhir — simpan di album khusus'},
+  {title:'Gabung komunitas engineer Sumbar', desc:'Grup Facebook/Telegram engineer, atau daftar PII setempat'},
+  {title:'Post pertama di LinkedIn', desc:'Cerita proyek terbaru atau tips kelistrikan sederhana'},
+  {title:'Bantu 2-3 tetangga cek instalasi', desc:'Gratis dulu — mereka jadi referral word-of-mouth terpercaya'},
+];
+
+const checked = new Array(checkItems.length).fill(false);
+
+function renderChecklist() {
+  const el = document.getElementById('checklist');
+  if (!el) return;
+  el.innerHTML = checkItems.map((item, i) => `
+    <div class="check-item">
+      <div class="check-box ${checked[i]?'checked':''}" onclick="toggleCheck(${i})">${checked[i]?'✓':''}</div>
+      <div class="check-content">
+        <div class="check-title" style="${checked[i]?'text-decoration:line-through;color:var(--text3)':''}">${item.title}</div>
+        <div class="check-desc">${item.desc}</div>
+      </div>
+    </div>`).join('');
+  const done = checked.filter(Boolean).length;
+  const pct = Math.round(done / checkItems.length * 100);
+  const mainBar = document.getElementById('brand-main-bar');
+  if (mainBar) mainBar.style.width = pct + '%';
+  const pctEl = document.getElementById('brand-pct');
+  if (pctEl) pctEl.textContent = done + ' / ' + checkItems.length + ' checklist selesai';
+  const dashBar = document.getElementById('brand-dash-bar');
+  if (dashBar) dashBar.style.width = pct + '%';
+  const dashPct = document.getElementById('brand-dash-pct');
+  if (dashPct) dashPct.textContent = done + ' / ' + checkItems.length + ' selesai';
+}
+
+function toggleCheck(i) {
+  checked[i] = !checked[i];
+  renderChecklist();
+}
+
+renderChecklist();
+
+// RISK TOGGLE
+function toggleRisk(card) {
+  const body = card.querySelector('.risk-body');
+  const isOpen = body.classList.contains('open');
+  document.querySelectorAll('.risk-body').forEach(b => b.classList.remove('open'));
+  if (!isOpen) body.classList.add('open');
+}
+
+// PILLAR TOGGLE
+function togglePillar(id) {
+  const el = document.getElementById(id);
+  const isOpen = el.classList.contains('open');
+  ['p1','p2','p3','p4'].forEach(p => document.getElementById(p).classList.remove('open'));
+  if (!isOpen) el.classList.add('open');
+}
+
+// init
+updateAlokasi();
+updateSim();
+</script>
+</body>
+</html>
