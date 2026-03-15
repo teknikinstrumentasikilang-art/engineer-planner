@@ -1301,10 +1301,9 @@ async function getApiKey() {
   // Try cache first
   if (window._cachedApiKey) return window._cachedApiKey;
   // Try firebase
-  if (typeof db !== 'undefined' && db) {
+  if (window._db && window._fsDoc && window._fsGetDoc) {
     try {
-      const { doc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-      const snap = await getDoc(doc(db, 'config', 'apikey'));
+      const snap = await window._fsGetDoc(window._fsDoc(window._db, 'config', 'apikey'));
       if (snap.exists() && snap.data().key) {
         window._cachedApiKey = snap.data().key;
         return window._cachedApiKey;
@@ -1316,10 +1315,9 @@ async function getApiKey() {
 }
 
 async function saveApiKeyToFirebase(key) {
-  if (typeof db !== 'undefined' && db) {
+  if (window._db && window._fsDoc && window._fsSetDoc) {
     try {
-      const { doc, setDoc } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-      await setDoc(doc(db, 'config', 'apikey'), { key, savedAt: Date.now() });
+      await window._fsSetDoc(window._fsDoc(window._db, 'config', 'apikey'), { key, savedAt: Date.now() });
       return true;
     } catch(e) { console.warn('Save key failed', e); return false; }
   }
@@ -1617,6 +1615,11 @@ if (PLACEHOLDER) {
   const app = initializeApp(firebaseConfig);
   db = getFirestore(app);
   const auth = getAuth(app);
+  // Expose to window for regular script access
+  window._db = db;
+  window._fsDoc = doc;
+  window._fsSetDoc = setDoc;
+  window._fsGetDoc = getDoc;
 
   const PIN_KEY = 'elp_pin';
   let currentPin = localStorage.getItem(PIN_KEY) || '';
@@ -1647,6 +1650,7 @@ if (PLACEHOLDER) {
   function listenToData() {
     if (unsub) unsub();
     if (!currentPin) return;
+    window._currentPin = currentPin;
     unsub = onSnapshot(getPinDoc(), (snap) => {
       if (!snap.exists()) return;
       const d = snap.data();
@@ -1689,6 +1693,7 @@ if (PLACEHOLDER) {
     const val = document.getElementById('pin-input').value.trim();
     if (!val || val.length < 4) { setPinSt('Min 4 karakter!', '#f06060'); return; }
     currentPin = val;
+    window._currentPin = val;
     localStorage.setItem(PIN_KEY, val);
     setPinSt('⟳ Menghubungkan...', '#9b9891');
     setStatus('⟳ Menghubungkan...', '#9b9891');
@@ -1699,8 +1704,10 @@ if (PLACEHOLDER) {
   await signInAnonymously(auth).catch(() => setStatus('✕ Auth gagal', '#f06060'));
 
   if (currentPin) {
+    window._currentPin = currentPin;
     setStatus('⟳ Konek PIN...', '#9b9891');
     setPinSt('⟳ Konek...', '#9b9891');
+    await signInAnonymously(auth).catch(()=>{});
     listenToData();
   } else {
     setStatus('⚡ Set PIN untuk sync', '#f0b429');
