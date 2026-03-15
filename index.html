@@ -1222,5 +1222,208 @@ function togglePillar(id) {
 updateAlokasi();
 updateSim();
 </script>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+// ── GANTI DENGAN CONFIG FIREBASE KAMU ──
+const firebaseConfig = {
+  apiKey: "AIzaSyC5ZSDdBU_3fRo8Jm9NlaXMwcDkp93WiaA",
+  authDomain: "engineer-planner.firebaseapp.com",
+  projectId: "engineer-planner",
+  storageBucket: "engineer-planner.firebasestorage.app",
+  messagingSenderId: "543602458488",
+  appId: "1:543602458488:web:5b8a127ba85eaa2f6a528d",
+  measurementId: "G-1Q86L3FVPG"
+};
+// ─────────────────────────────────────
+
+const PLACEHOLDER = firebaseConfig.apiKey === "GANTI_API_KEY";
+
+let db, uid;
+const SAVE_DELAY = 1200;
+let saveTimer = null;
+
+// UI toast
+function toast(msg, color='var(--color-text-success)') {
+  let t = document.getElementById('fb-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'fb-toast';
+    t.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:9999;padding:10px 18px;border-radius:10px;font-size:13px;font-family:var(--font-body);background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);transition:opacity .4s;pointer-events:none';
+    document.body.appendChild(t);
+  }
+  t.style.color = color;
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.style.opacity = '0', 2500);
+}
+
+// Status indicator
+function setStatus(text, color) {
+  let s = document.getElementById('fb-status');
+  if (!s) {
+    s = document.createElement('div');
+    s.id = 'fb-status';
+    s.style.cssText = 'position:fixed;top:12px;right:16px;z-index:9999;font-size:11px;font-family:var(--font-mono);padding:4px 10px;border-radius:20px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary)';
+    document.body.appendChild(s);
+  }
+  s.style.color = color;
+  s.textContent = text;
+}
+
+if (PLACEHOLDER) {
+  setStatus('⚡ Setup Firebase dulu', 'var(--color-text-warning)');
+  // show setup banner
+  const banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9998;background:var(--color-background-warning);color:var(--color-text-warning);font-size:13px;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;font-family:var(--font-body)';
+  banner.innerHTML = `<span>⚠ Sync belum aktif — ikuti panduan setup Firebase di bawah ini untuk aktifkan sync HP ↔ laptop</span><button onclick="document.getElementById('fb-guide').style.display='block';this.parentElement.style.display='none'" style="background:var(--color-text-warning);color:var(--color-background-warning);border:none;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;font-weight:600">Lihat panduan</button>`;
+  document.body.appendChild(banner);
+
+  const guide = document.createElement('div');
+  guide.id = 'fb-guide';
+  guide.style.cssText = 'display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.7);overflow:auto;padding:40px 20px';
+  guide.innerHTML = `
+  <div style="max-width:560px;margin:0 auto;background:var(--bg2,#141418);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px 28px 24px;color:var(--text,#f0ede8);font-family:var(--font-body)">
+    <div style="font-size:11px;opacity:.5;font-family:var(--font-mono);margin-bottom:6px">PANDUAN SETUP</div>
+    <h2 style="font-size:22px;margin-bottom:4px">Aktifkan sync Firebase</h2>
+    <p style="font-size:13px;opacity:.6;margin-bottom:20px">Gratis selamanya untuk pemakaian pribadi. Ikuti 5 langkah ini.</p>
+
+    <div style="display:flex;flex-direction:column;gap:12px;font-size:13px">
+      <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:14px 16px">
+        <div style="font-weight:600;margin-bottom:4px">1. Buka Firebase Console</div>
+        <div style="opacity:.7">Buka <a href="https://console.firebase.google.com" target="_blank" style="color:#60a8f0">console.firebase.google.com</a> → login dengan akun Google</div>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:14px 16px">
+        <div style="font-weight:600;margin-bottom:4px">2. Buat project baru</div>
+        <div style="opacity:.7">Klik <strong>Add project</strong> → nama: <code style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:4px">engineer-planner</code> → Disable Google Analytics → Create</div>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:14px 16px">
+        <div style="font-weight:600;margin-bottom:4px">3. Tambah Web App & ambil config</div>
+        <div style="opacity:.7">Di dashboard project → klik ikon <strong>&lt;/&gt;</strong> (Web) → register app → copy seluruh isi <code style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:4px">firebaseConfig = {...}</code></div>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:14px 16px">
+        <div style="font-weight:600;margin-bottom:4px">4. Aktifkan Firestore & Auth</div>
+        <div style="opacity:.7">
+          <div>· Sidebar → <strong>Firestore Database</strong> → Create database → pilih <strong>Production mode</strong> → pilih region asia-southeast1 (Singapore)</div>
+          <div style="margin-top:4px">· Sidebar → <strong>Authentication</strong> → Get started → <strong>Anonymous</strong> → Enable → Save</div>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:14px 16px">
+        <div style="font-weight:600;margin-bottom:4px">5. Set Firestore Rules</div>
+        <div style="opacity:.7">Firestore → tab <strong>Rules</strong> → ganti isinya dengan ini → Publish:</div>
+        <div style="background:rgba(0,0,0,.4);border-radius:6px;padding:10px 12px;margin-top:8px;font-family:monospace;font-size:11px;line-height:1.8;opacity:.9">rules_version = '2';<br>service cloud.firestore {<br>&nbsp;&nbsp;match /databases/{db}/documents {<br>&nbsp;&nbsp;&nbsp;&nbsp;match /users/{uid}/{doc=**} {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allow read, write: if request.auth.uid == uid;<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;}<br>}</div>
+      </div>
+      <div style="background:rgba(200,240,96,.08);border:1px solid rgba(200,240,96,.2);border-radius:10px;padding:14px 16px">
+        <div style="font-weight:600;margin-bottom:4px;color:#c8f060">6. Paste config ke file HTML</div>
+        <div style="opacity:.8">Buka file <code style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:4px">index.html</code> di teks editor → cari bagian <code style="background:rgba(255,255,255,.1);padding:1px 6px;border-radius:4px">GANTI_API_KEY</code> → ganti semua nilai dengan config yang dicopy dari langkah 3 → save → upload ulang ke GitHub</div>
+      </div>
+    </div>
+
+    <button onclick="document.getElementById('fb-guide').style.display='none'" style="margin-top:20px;width:100%;padding:12px;background:#c8f060;color:#0d0d0f;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer">Tutup panduan</button>
+  </div>`;
+  document.body.appendChild(guide);
+
+} else {
+  // REAL FIREBASE INIT
+  const app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  const auth = getAuth(app);
+
+  setStatus('⟳ Menghubungkan...', 'var(--color-text-secondary)');
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      uid = user.uid;
+      setStatus('● Terhubung', 'var(--color-text-success)');
+      listenToData();
+    }
+  });
+
+  await signInAnonymously(auth).catch(() => {
+    setStatus('✕ Gagal konek', 'var(--color-text-danger)');
+  });
+
+  function getUserDoc() {
+    return doc(db, 'users', uid, 'data', 'state');
+  }
+
+  function listenToData() {
+    onSnapshot(getUserDoc(), (snap) => {
+      if (!snap.exists()) return;
+      const d = snap.data();
+
+      // restore gaji
+      if (d.gaji !== undefined) {
+        const sl = document.getElementById('gaji-slider');
+        if (sl) { sl.value = d.gaji; updateAlokasi(); }
+      }
+      // restore omzet & bahan
+      if (d.omzet !== undefined) {
+        const sl = document.getElementById('omzet-slider');
+        if (sl) { sl.value = d.omzet; updateTracker(); }
+      }
+      if (d.bahan !== undefined) {
+        const sl = document.getElementById('bahan-slider');
+        if (sl) { sl.value = d.bahan; updateTracker(); }
+      }
+      // restore sim bulan
+      if (d.simBulan !== undefined) {
+        const sl = document.getElementById('sim-bulan');
+        if (sl) { sl.value = d.simBulan; updateSim(); }
+      }
+      // restore checklist
+      if (d.checked !== undefined) {
+        d.checked.forEach((v, i) => { checked[i] = v; });
+        renderChecklist();
+      }
+      toast('✓ Data dimuat dari cloud');
+    });
+  }
+
+  function saveData() {
+    if (!uid) return;
+    const sl_g = document.getElementById('gaji-slider');
+    const sl_o = document.getElementById('omzet-slider');
+    const sl_b = document.getElementById('bahan-slider');
+    const sl_s = document.getElementById('sim-bulan');
+    setDoc(getUserDoc(), {
+      gaji: sl_g ? parseInt(sl_g.value) : 11,
+      omzet: sl_o ? parseInt(sl_o.value) : 250000,
+      bahan: sl_b ? parseInt(sl_b.value) : 120000,
+      simBulan: sl_s ? parseInt(sl_s.value) : 6,
+      checked: [...checked],
+      updatedAt: Date.now()
+    }, { merge: true }).then(() => {
+      setStatus('✓ Tersimpan', 'var(--color-text-success)');
+      setTimeout(() => setStatus('● Online', 'var(--color-text-success)'), 1500);
+    });
+  }
+
+  function debouncedSave() {
+    setStatus('⟳ Menyimpan...', 'var(--color-text-secondary)');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveData, SAVE_DELAY);
+  }
+
+  // Patch all interactive controls to trigger save
+  window.addEventListener('input', (e) => {
+    if (['gaji-slider','omzet-slider','bahan-slider','sim-bulan'].includes(e.target.id)) {
+      debouncedSave();
+    }
+  });
+
+  // Patch toggleCheck to also save
+  const _origToggleCheck = window.toggleCheck;
+  window.toggleCheck = function(i) {
+    _origToggleCheck(i);
+    debouncedSave();
+  };
+}
+</script>
 </body>
 </html>
